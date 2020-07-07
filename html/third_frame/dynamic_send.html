@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css">
+    <style>
+        .sm textarea {
+            color: #979797;
+            height: 6.4rem
+        }
+
+        .aui-list {
+            border-top: none;
+        }
+
+        @media screen and (-webkit-min-device-pixel-ratio: 1.5) {
+            .aui-list {
+                border: none;
+                background-size: 100% 0px;
+            }
+        }
+
+        .aui-list .aui-list-item:active {
+            background-color: #FFFFFF;
+        }
+
+        .imglist {
+            width: 100%;
+            clear: both;
+            margin: 1rem auto;
+        }
+
+        .imglist img {
+            width: 4rem;
+            height: 4rem;
+        }
+
+        .add {
+            width: 4rem;
+            height: 4rem;
+            background: url(../../image/add.png) no-repeat;
+            background-size: 100% 100%;
+            float: left;
+            margin-right: 1rem;
+        }
+
+        .addimg {
+            float: left;
+            height: 4rem;
+            width: 4rem;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .addimg img {
+            width: 4rem;
+            height: 4rem;
+        }
+
+        .addimg .x img {
+            width: 0.8rem;
+            height: 0.8rem;
+            position: relative;
+            top: -4.4rem;
+            left: -0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav" style="padding-top:25px;background-color:#D33A31" id="secHeader">
+        <a class="aui-btn aui-pull-left" onclick="goback()"> 取消</a>
+        <div class="aui-title">
+            发布动态
+        </div>
+        <a class="aui-pull-right" onclick="finish()">完成</a>
+    </header>
+    <div class="aui-card-list">
+        <div class="aui-content aui-margin-b-15">
+            <ul class="aui-list aui-form-list">
+                <li class="aui-list-item">
+                    <div class="aui-list-item-inner sm">
+                        <textarea id="comment" placeholder="说点什么吧"></textarea>
+                    </div>
+                </li>
+                <li class="aui-list-item">
+                    <div class="imglist">
+                        <div class="add" onclick="upimg()"></div>
+                    </div>
+                    <!--遮罩层-->
+                    <!-- <div class="mask"> -->
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui_compress.js"></script>
+<script type="text/javascript">
+ var dialog = new auiDialog({})
+ var toast = new auiToast();
+ var comment=$api.byId('comment');
+ var dyimg=null;
+ var base64Img=null;
+ var user=$api.getStorage('user');
+    apiready = function() {
+        $api.fixStatusBar($api.dom('.aui-bar'));
+    };
+
+    function upimg() {
+        api.actionSheet({
+            title: '上传照片',
+            cancelTitle: '取消',
+            buttons: ['拍照', '相册']
+        }, function(ret, err) {
+            if (ret) {
+                getPicture(ret.buttonIndex);
+            }
+        });
+    }
+
+    function getPicture(sourceType) {
+        if (sourceType == 1) {
+            api.getPicture({
+              sourceType: 'camera',
+                 encodingType: 'png',
+                 mediaValue: 'pic',
+                 allowEdit: false,
+                 saveToPhotoAlbum: false
+            }, function(ret, err) {
+                console.log(ret.data);
+                var imgs = $api.dom(".imglist");
+                var imgList = document.getElementsByClassName("addimg");
+                if (!ret.data.length) {} else {
+                    if (imgList.length >= 2) {
+                        api.toast({
+                            msg: '不能再添加啦',
+                            duration: 3000,
+                            location: 'bottom'
+                        });
+                    } else {
+
+                      dyimg=ret.data;
+                        var dcc = document.createElement("div");
+                        dcc.setAttribute("class", "addimg");
+                        dcc.setAttribute("onclick", "yichu(this)");
+                        dcc.innerHTML = '<div onclick="yichu(this)"><img src="' + ret.data + '"/><div class="x" ><img src="../../image/quxiao.png"/></div></div>';
+                        prependChild(dcc, imgs)
+                    }
+                }
+            });
+        } else if (sourceType == 2) {
+          //UIMediaScanner 是一个多媒体扫描器，可扫描系统的图片、视频等多媒体资源
+          var obj = api.require('UIMediaScanner');
+          obj.open({
+              //返回的资源种类,picture（图片）,video（视频）,all（图片和视频）
+              type: 'picture',
+              //（可选项）图片显示的列数，须大于1
+              column: 4,
+              max: 1,
+              //（可选项）图片排序方式,asc（旧->新）,desc（新->旧）
+              sort: {
+                  key: 'time',
+                  order: 'desc'
+              },
+              //（可选项）模块各部分的文字内容
+              texts: {
+                  stateText: '已选择*项',
+                  cancelText: '取消',
+                  finishText: '完成'
+              },
+              styles: {
+                  bg: '#fff',
+                  mark: {
+                      icon: '',
+                      position: 'bottom_right',
+                      size: 20
+                  },
+                  nav: {
+                      bg: '#D33A31',
+                      stateColor: '#000',
+                      stateSize: 18,
+                      cancleBg: 'rgba(0,0,0,0)',
+                      cancelColor: '#000',
+                      cancelSize: 18,
+                      finishBg: 'rgba(0,0,0,0)',
+                      finishColor: '#000',
+                      finishSize: 18
+                  }
+              }
+            }, function(ret) {
+                var imgs = $api.dom(".imglist");
+                var imgList = document.getElementsByClassName("addimg");
+                if (ret.eventType == 'cancel') {} else if (ret.list.length > 0) {
+                    if (imgList.length >= 2) {
+                        api.toast({
+                            msg: '不能再添加啦',
+                            duration: 3000,
+                            location: 'bottom'
+                        });
+                    } else {
+                        // for (var i = 0; i < ret.list.length; i++) {
+                            var dcc = document.createElement("div");
+                            dcc.setAttribute("class", "addimg");
+                            dcc.setAttribute("onclick", "yichu(this)");
+                            dcc.innerHTML = '<img id="dyimg" src="' + ret.list[0].thumbPath + '"/><div class="x" ><img src="../../image/quxiao.png"/></div>';
+                            prependChild(dcc, imgs)
+                            dyimg=ret.list[0].thumbPath;
+
+                        // }
+                    }
+                }
+            });
+        }
+    }
+
+    function yichu(el) {
+       dialog.alert({
+       title:"提示",
+       msg:'是否删除照片',
+       buttons:['确定','取消']
+   },function(ret){
+       if(ret){
+         var index=ret.buttonIndex;
+         if(index==1){
+            $api.remove(el);
+         }
+       }
+   })
+    }
+    function prependChild(html, el) {
+        if (el.hasChildNodes()) {
+            el.insertBefore(html, el.firstChild);
+        } else {
+            el.appendChild(html);
+        }
+    }
+    function goback(){
+      api.closeWin({
+          name: 'dynamic_send'
+      });
+
+
+    }
+    function finish(){
+        var text=$api.val(comment);
+        if(dyimg!=null){
+          auiCompress(dyimg,{
+                width:300,
+                quantity:1,
+    success: function (ret) {
+      base64Img=ret.base64;
+      api.ajax({
+          url: getURL_T()+'/dynamic/add',
+          method: 'post',
+          data: {
+              values: {
+                  uid: user.id,
+                  comment:text,
+                  image:base64Img
+              }
+
+          }
+      },function(ret, err){
+          if (ret) {
+              console.log(JSON.stringify(ret))
+            if(ret.data){
+              toast.success({
+                        title:"发表成功",
+                        duration:2000
+                    });
+              goback();
+            }
+          }
+      });
+
+    }
+    });
+        }
+
+
+    }
+</script>
+
+</html>

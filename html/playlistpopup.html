@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="copyright" content="www.apicloud.com" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<title>正在播放</title>
+<link rel="stylesheet" type="text/css" href="../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../css/egret.css" />
+<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+
+<style>
+html,body {
+background: rgba(0,0,0,0);
+}
+</style>
+</head>
+<body >
+  <div id="back" style="width:100%;" onclick="goback()"></div>
+<footer style="position:fixed;bottom:0;width:100%" id="footer">
+  <div class="aui-content">
+          <ul class="aui-list">
+              <li class="aui-list-header" id="musicname">我创建的歌单(0)</li>
+              <li class="aui-list-item" onclick="createplaylist()">
+                  <div class="aui-list-item-label-icon">
+                      <!-- <i class="aui-iconfont aui-icon-home"></i> -->
+                    <img src="../image/musiclist/musiclistcollect.png" alt=""  style="width:30px">
+                  </div>
+                  <div class="aui-list-item-inner">
+                    新建歌单
+                  </div>
+              </li>
+              <li class="aui-list-item" onclick="glplaylist()">
+                  <div class="aui-list-item-label-icon">
+                    <img src="../image/musiclist/musiclistdown.png" alt="" style="width:30px">
+                  </div>
+                  <div class="aui-list-item-inner">
+                    管理歌单
+                  </div>
+              </li>
+
+          </ul>
+      </div>
+</footer>
+
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+
+var myplaylists=null;
+var footer=$api.byId('footer');
+var back=$api.byId('back');
+var musicname=$api.byId('musicname');
+var user=$api.getStorage('user');
+apiready = function  () {
+  var footerPos = $api.offset(footer);
+  $api.attr(back, 'style', 'height:'+(api.winHeight-footerPos.h)+'px');
+  myplaylists=api.pageParam.list;
+
+  if(myplaylists!=null){
+    $api.text(musicname, '我创建的歌单('+myplaylists.length+')');
+  }
+}
+function goback(){
+  api.closeFrame({
+      name: 'playlistpopup'
+  });
+
+}
+function createplaylist(){
+  if(user==null){
+    api.confirm({
+        title: '提示',
+        msg: '您还没有登录,请先登录!',
+        buttons: ['确定', '取消']
+    }, function(ret, err) {
+        var index = ret.buttonIndex;
+        if(index==1){
+          api.openWin({
+              name: 'login',
+              url: './forth_frame/login.html',
+              pageParam:{
+                logintag:false
+              },
+              delay: 200
+          });
+          goback();
+        }
+    });
+  }else{
+    api.openWin({
+        name: 'createplaylist',
+        url: './second_frame/createplaylist.html',
+        pageParam: {
+            uid: user.id
+        }
+    });
+    goback();
+  }
+
+}
+function glplaylist(){
+
+  api.execScript({
+      name: 'root',
+      frameName: 'frame2_main',
+      script: 'glplaylist()'
+  });
+  goback();
+
+}
+
+</script>
+</html>

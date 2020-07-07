@@ -1,0 +1,378 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <style>
+    html,body {min-height: 100%;background-color: #f9f9f9;}
+  .touxiang{
+  width: 30px;
+  }
+  .gxqminput{
+  width: 100%;
+  height: 100px;
+  margin-top: 2%;
+  background: #f9f9f9;
+  display: block;
+  }
+    </style>
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav" style="padding-top:25px;background-color:#D33A31" id="secHeader">
+      <a class="aui-pull-left" onclick="goback()" >
+          <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title">修改歌单信息</div>
+    </header>
+    <div class="aui-content aui-margin-b-15">
+      <ul class="aui-list aui-list-in">
+          <li class="aui-list-item" onclick="updteImage()">
+              <div class="aui-list-item-inner aui-list-item-arrow">
+                  <div class="aui-list-item-title">歌单图片</div>
+                  <div class="aui-list-item-right">
+                      <div style="position:relative;top:0; right:0"> <img id="touxiang" class="touxiang" /></div>
+                  </div>
+              </div>
+          </li>
+      <li class="aui-list-item" onclick="updateName()">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+              <div class="aui-list-item-title">歌单名称</div>
+              <div class="aui-list-item-right">
+                  <div style="position:relative;top:0; right:0" id="nicheng"> </div>
+              </div>
+          </div>
+      </li>
+      <!-- <li class="aui-list-item" onclick="updateAge()">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+              <div class="aui-list-item-title">年龄</div>
+              <div class="aui-list-item-right">
+                  <div style="position:relative;top:0; right:0" id="age"> </div>
+              </div>
+          </div>
+      </li> -->
+      <li class="aui-list-item" onclick="upadteSex()">
+          <div class="aui-list-item-inner aui-list-item-arrow">
+              <div class="aui-list-item-title">设置权限</div>
+              <div class="aui-list-item-right">
+                  <div style="position:relative;top:0; right:0" id="sex"> </div>
+              </div>
+          </div>
+      </li>
+    </ul>
+  </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js"></script>
+<script type="text/javascript" src="../../script/aui_compress.js"></script>
+<script type="text/javascript">
+var list=null;
+var plimg=null;
+var plid=null;
+var base64Img=null;
+var toast = new auiToast();
+ var dialog = new auiDialog({})
+    apiready = function() {
+      var header = $api.byId('secHeader');
+         $api.fixStatusBar(header);
+        var headerPos = $api.offset(header);
+        var nicheng = $api.byId('nicheng');
+        var touxiang = $api.byId('touxiang');
+        var sex = $api.byId('sex');
+         plid =api.pageParam.plid;
+
+         api.ajax({
+             url: getURL_T()+'/playlist/selectId',
+             method: 'get',
+             data: {
+                 values: {
+                     id: plid
+                 }
+             }
+         },function(ret, err){
+             if (ret) {
+                if(ret.data!=null){
+                  list=ret.data;
+                  $api.text(nicheng, list.name);
+                  $api.text(sex, list.isOnline);
+                  $api.attr(touxiang, 'src', getURL_N() + list.image);
+                  console.log(getURL_N() + list.image);
+                }
+             }
+         });
+
+    }
+    function goback () {
+    	api.closeWin({name:'updateplaylist'});
+    api.execScript({
+        name: 'musicplaylist_top',
+        frameName:'musicplaylist_body',
+        script: 'myreload()'
+    });
+    }
+
+    function updateName() {
+      dialog.prompt({
+        title:"修改昵称",
+        text:'请输入昵称',
+        buttons:['取消','确定']
+    },function(ret){
+        if(ret.buttonIndex == 2){
+          temp = ret.text;
+      api.ajax({
+          url: getURL_T()+'/playlist/update',
+          method: 'post',
+          data: {
+              values: {
+                  // "id":"72fa3d57ca954996983732bd4185a83c",
+                  "id": plid,
+                  "name": temp
+              }
+          }
+      }, function(ret, err) {
+        console.log(JSON.stringify(ret))
+          var data = ret.data;
+          if (data == "true" || data == true) {
+              // list.name = temp;
+              // $api.text(nicheng, temp);
+              window.location.reload();
+          } else {
+            toast.fail({
+                      title:"修改失败",
+                      duration:2000
+                  });
+          }
+      });
+        }
+    })
+    }
+        function upadteSex(){
+          var dialogBox = api.require('dialogBox');
+dialogBox.evaluation({
+    styles: {
+        bg: '#fff',
+        w: 200,
+        title: {
+            marginT: 20,
+            size: 15,
+            color: '#000',
+            bold: false
+        },
+        buttons: [{
+            marginB: 0,
+            marginL: 0,
+            w: 200,
+            h: 35,
+            bg: '#fff',
+            color: '#D33A31',
+            size: 12
+        }, {
+            marginB: 0,
+            marginL: 0,
+            w: 200,
+            h: 35,
+            bg: '#fff',
+            color: '#D33A31',
+            size: 12
+        }]
+    },
+    texts: {
+        title: '是否公开歌单',
+        buttons: [{
+            text: '是'
+        }, {
+            text: '否'
+        }]
+    }
+}, function(ret, err) {
+    if (ret) {
+        var temp=null;
+        if(ret.index==0){
+          temp=1;
+        }else {
+          temp=0;
+        }
+        api.ajax({
+            url:  getURL_T()+'/playlist/update',
+            method: 'post',
+            dataType: 'json',
+            data: {
+                values: {
+                    // "id":"72fa3d57ca954996983732bd4185a83c",
+                    "id": plid,
+                    "isOnline": temp
+                }
+            }
+        }, function(ret, err) {
+            var data = ret.data;
+            if (data == "true" || data == true) {
+
+                var dialogBox = api.require('dialogBox');
+                dialogBox.close({
+                    dialogName: 'evaluation'
+                });
+                window.location.reload();
+            } else {
+              toast.fail({
+                        title:"修改失败",
+                        duration:2000
+                    });
+            }
+        });
+        var dialogBox = api.require('dialogBox');
+        dialogBox.close({
+            dialogName: 'evaluation'
+        });
+    } else {
+      var dialogBox = api.require('dialogBox');
+      dialogBox.close({
+          dialogName: 'evaluation'
+      });
+    }
+});
+}
+
+        function updteImage() {
+            api.actionSheet({
+                title: '上传歌单头像',
+                cancelTitle: '取消',
+                buttons: ['拍照', '相册']
+            }, function(ret, err) {
+                if (ret) {
+                    getPicture(ret.buttonIndex);
+                }
+            });
+        }
+
+        function getPicture(sourceType) {
+            if (sourceType == 1) { // 拍照
+                // //获取一张图片
+                // api.getPicture({
+                //   sourceType: 'camera',
+                //  encodingType: 'png',
+                //  mediaValue: 'pic',
+                //  allowEdit: false,
+                //  saveToPhotoAlbum: false
+                // },function(ret, err) {
+                //     // 获取拍照数据并处理
+                //     console.log(JSON.stringify(ret));
+                //     dyimg=ret.data;
+                //     shangchuanimg(plid,getBase64Image(dyimg,100,100))
+                //     if (!ret.data.length) {} else {
+                //
+                //     }
+                // });
+                api.getPicture({
+                  sourceType: 'camera',
+                     encodingType: 'png',
+                     mediaValue: 'pic',
+                     allowEdit: false,
+                     saveToPhotoAlbum: false
+                }, function(ret, err) {
+                    console.log(ret.data);
+                        dyimg=ret.data;
+                        ajaxsendImg(plid,dyimg)
+                });
+
+            } else if (sourceType == 2) { // 从相机中选择
+                //UIMediaScanner 是一个多媒体扫描器，可扫描系统的图片、视频等多媒体资源
+                var obj = api.require('UIMediaScanner');
+                obj.open({
+                    //返回的资源种类,picture（图片）,video（视频）,all（图片和视频）
+                    type: 'picture',
+                    //（可选项）图片显示的列数，须大于1
+                    column: 4,
+                    max: 1,
+                    //（可选项）图片排序方式,asc（旧->新）,desc（新->旧）
+                    sort: {
+                        key: 'time',
+                        order: 'desc'
+                    },
+                    //（可选项）模块各部分的文字内容
+                    texts: {
+                        stateText: '已选择*项',
+                        cancelText: '取消',
+                        finishText: '完成'
+                    },
+                    styles: {
+                        bg: '#fff',
+                        mark: {
+                            icon: '',
+                            position: 'bottom_right',
+                            size: 20
+                        },
+                        nav: {
+                            bg: '#D33A31',
+                            stateColor: '#000',
+                            stateSize: 18,
+                            cancleBg: 'rgba(0,0,0,0)',
+                            cancelColor: '#000',
+                            cancelSize: 18,
+                            finishBg: 'rgba(0,0,0,0)',
+                            finishColor: '#000',
+                            finishSize: 18
+                        }
+                    }
+                }, function(ret) {
+                    // 获取图片数据并处理
+                    if (ret) {
+                      if (ret.eventType == 'cancel') {} else if (ret.list.length > 0) {
+                          if (ret.list.length >= 2) {
+                              api.toast({
+                                  msg: '不能再添加啦',
+                                  duration: 3000,
+                                  location: 'bottom'
+                              });
+                          } else {
+                                  dyimg=ret.list[0].thumbPath;
+                                  ajaxsendImg(plid,dyimg)
+                          }
+                      }
+                    }
+                });
+            }
+        }
+
+        function ajaxsendImg(plid,path){
+          auiCompress(path,{
+                width:300,
+                quantity:1,
+    success: function (ret) {
+      base64Img=ret.base64;
+      api.ajax({
+           url:  getURL_T()+'/playlist/update',
+          method: 'post',
+          data: {
+              values: {
+                  "id": plid,
+                  image:base64Img
+              }
+          }
+      }, function(ret, err) {
+          var data = ret.data;
+          if (data == "true" || data == true) {
+                api.hideProgress();
+                api.clearCache(function() {});
+              window.location.reload();
+          } else {
+              api.toast({
+                  msg: '修改失败',
+                  duration: 2000,
+                  location: 'middle'
+              });
+               // api.hideProgress();
+          }
+      });
+    }
+    });
+        }
+</script>
+
+</html>

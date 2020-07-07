@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="copyright" content="www.apicloud.com" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<title>正在播放</title>
+<link rel="stylesheet" type="text/css" href="../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../css/egret.css" />
+<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+
+<style>
+html,body {
+background: rgba(0,0,0,0);
+}
+</style>
+</head>
+<body >
+  <div id="back" style="width:100%;" onclick="goback()"></div>
+<footer style="position:fixed;bottom:0;width:100%" id="footer">
+  <div id="playlistbody"></div>
+</footer>
+
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript">
+var music=null;
+var user=$api.getStorage('user');
+var myplaylists=$api.getStorage('myplaylists');
+var user=$api.getStorage('user');
+var footer=$api.byId('footer');
+var back=$api.byId('back');
+var list=$api.byId('list');
+apiready = function  () {
+  api.closeFrame({
+      name: 'morepopup'
+  });
+  api.closeFrame({
+      name: 'morepopup2'
+  });
+  var toast = new auiToast();
+  music=api.pageParam.music;
+  var footerPos = $api.offset(footer);
+  $api.attr(back, 'style', 'height:'+(api.winHeight-footerPos.h)+'px');
+  if(user==null){
+    api.confirm({
+        title: '提示',
+        msg: '您还没有登录,请先登录!',
+        buttons: ['确定', '取消']
+    }, function(ret, err) {
+        var index = ret.buttonIndex;
+        if(index==1){
+          api.openWin({
+              name: 'login',
+              url: '../html/forth_frame/login.html',
+              delay: 200
+          });
+        }
+    });
+  }else{
+    if(myplaylists!=null){
+      var html='';
+      var divs=''
+      var div1='<div class="aui-content"><ul class="aui-list"><li class="aui-list-header" >收藏到歌单</li><li class="aui-list-item"><div class="aui-list-item-label-icon">'
+                +'<img src="../image/musiclist/musiclistcollect.png" alt=""  style="width:30px"></div><div class="aui-list-item-inner" onclick="openNewWind()">新建歌单</div></li>'
+              for(var i=0;i<myplaylists.length;i++){
+                  var div2='<li class="aui-list-item special"><div class="aui-list-item-label-icon"><img src="../image/frame02cover/wdsc.png"class="playlistimg" style="width:50px"> </div>'
+                            +'<div class="aui-list-item-inner "><div class="aui-list-item-title">'
+                            +myplaylists[i].name
+                            +'</div></div></li>'
+                  divs+=div2;
+              }
+              var div3='</ul></div>'
+              html=div1+divs+div3;
+              playlistbody.innerHTML=html;
+              divs=document.getElementsByClassName('special');
+              var imgs=document.getElementsByClassName('playlistimg');
+              for(var i=0;i<divs.length;i++){
+                      if(myplaylists[i].image!=null){
+                      $api.attr(imgs[i], 'src', getURL_N()+myplaylists[i].image);
+                      }
+                      divs[i].onclick=(function(arg){
+                    return function(){
+                      api.ajax({
+                          url: getURL_T()+'/playlistCenter/add',
+                          method: 'post',
+                          data: {
+                              values: {
+                                  "plid": myplaylists[arg].id,
+                                  "mid":music.id
+                              }
+                          }
+                      },function(ret, err){
+                          if (ret) {
+                              if(ret.data){
+                                toast.success({
+                                          title:"添加成功",
+                                          duration:2000
+                                      },function(){
+                                        goback();
+                                      });
+
+                              }else {
+                                toast.fail({
+                                          title:"歌曲已经存在",
+                                          duration:2000
+                                      },function(){
+                                        goback();
+                                      });
+
+                              }
+                          } else {
+
+                          }
+                      });
+
+
+                        };
+                })(i);
+                    }
+    }
+  }
+
+}
+function goback(){
+  api.closeFrame({
+      name: 'addplaylist'
+  });
+
+}
+function openNewWind(){
+  if(user==null){
+    api.confirm({
+        title: '提示',
+        msg: '您还没有登录,请先登录!',
+        buttons: ['确定', '取消']
+    }, function(ret, err) {
+        var index = ret.buttonIndex;
+        if(index==1){
+          api.openWin({
+              name: 'login',
+              url: './login.html',
+              pageParam:{
+                logintag:false
+              },
+              delay: 200
+          });
+        }
+    });
+  }else{
+    api.openWin({
+        name: 'createplaylist',
+        url: './second_frame/createplaylist.html',
+        pageParam: {
+            uid: user.id
+        }
+    });
+  }
+}
+
+</script>
+</html>

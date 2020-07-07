@@ -1,0 +1,409 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="copyright" content="www.apicloud.com" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<title>正在播放</title>
+<link rel="stylesheet" type="text/css" href="../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../css/egret.css" />
+<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+
+<style>
+
+@-webkit-keyframes playing {
+
+	100% { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes playing {
+	100% { transform: rotate(360deg);}
+}
+body {height: 100%;
+}
+
+
+.play-up {position: relative;}
+.play-up-bg {width: 100%;height: 100%;position: absolute;filter:blur(15px); }
+
+
+.playdisc {position:absolute; width: 300px;height: 300px; border-radius:50%;
+	top:40%; left:50%;
+margin-top:-150px;
+margin-left:-150px;
+	animation:playing 5s infinite linear;
+	animation-play-state: paused;
+	-webkit-animation:playing 5s infinite linear;
+	-webkit-animation-play-state: paused;
+
+}
+
+.test{
+position: fixed;width: 100%;bottom: 10%;
+	}
+	.test div{
+	display:inline-block;
+	/*float:left;*/
+	}
+
+#end #str{
+	  width:30px;     
+	 font-size: 1em;
+	 margin-left: 3%;
+	 line-height:20px;
+ 	text-align:center;
+ 	color: #fff;
+	    }
+	.jdt {
+			position: absolute;
+			/*设置为绝对定位*/
+			z-index: -999;
+			/*设置重叠的上下次序，值越大月在上方*/
+			height: 0.3rem;
+			border: 0;
+			border-radius: 2px;
+			background-color: #D43C33;
+			width: 0;
+			margin-left: 10px;
+			margin-top: 15px;
+			;
+	}
+</style>
+</head>
+<body >
+
+	<header class="aui-bar aui-bar-nav" style="padding-top:25px;background-color:#D33A31" id="secHeader">
+			<a class="aui-pull-left" onclick="goback()">
+					<span class="aui-iconfont aui-icon-left"></span>
+			</a>
+			<div class="aui-title">
+					<div class="musicname" id="musicname">Yes I Do</div>
+					<div class="musicsinger" id="musicsinger" onclick="openplayer()">苏永康</div>
+			</div>
+			<a class="aui-pull-right aui-btn aui-btn-outlined">
+					<span class="aui-iconfont aui-icon-share"></span>
+			</a>
+	</header>
+
+<div class="play-up">
+	<img src="../image/musicplay/playbg.png" alt="" class="play-up-bg" id="playbg">
+	<img src="../image/login_bg.jpg" alt="" class="playdisc" id="playdisc">
+	<!-- <img src="../image/musicplay/play_needle01.png" alt="" class="play_needle"> -->
+
+
+
+
+    <section class="aui-grid" style="background-color:transparent;position: fixed;bottom:13%;width:100%">
+        <div class="aui-row">
+            <div class="aui-col-5 ">
+                 <img src="../image/musicplay/play_up_tool01.png" alt="" onclick="openNewFrame('addplaylist')"style="width:60px;"/>
+            </div>
+            <div class="aui-col-5 ">
+              <img src="../image/musicplay/play_up_tool02.png" alt="" style="width:60px;">
+            </div>
+            <div class="aui-col-5 " onclick="opencomments()">
+							<div class="aui-badge" style="top:25px;left:30%" id="pinglunnum">88</div>
+							<img src="../image/musicplay/play_up_tool03.png" alt="" style="width:60px;">
+
+            </div>
+            <div class="aui-col-5 ">
+							<img src="../image/musicplay/play_up_tool04.png" alt="" style="width:60px;">
+            </div>
+
+
+        </div>
+    </section>
+
+	<div class="test">
+			<div ><p id="str" class="aui-font-size-14" style="margin-left:10px;color:#fff;font-size:1em">00:00</p></div>
+		<div class="jdt_mid" id="mid">
+		<div class="jdt" id="jdt"></div>
+		<div class="aui-range" style="width:300px; margin-left:10px;"><input type="range" value="0" max="100" min="0" id="range"style="width:100%;background: rgba(0, 0, 0, 0.5)" /></div>
+		</div>
+		<div><p id="end" class="aui-font-size-14" style="margin-left:10px;color:#fff;font-size:1em">00:00</p></div>
+	</div>
+
+
+
+
+  <section class="aui-grid" style="position: fixed;bottom:0; background-color:transparent;left:5px;">
+      <div class="aui-row">
+          <div class="aui-col-5 ">
+              <img src="../image/test/loopmode01.png" alt="" style="width:40px;">
+          </div>
+          <div class="aui-col-5 ">
+              <img src="../image/test/syq.png" alt="" data-click="0" onclick="changeMusic('-1')" style="width:40px;">
+
+          </div>
+          <div class="aui-col-5 ">
+              <img src="../image/musicplay/play_btn_pause.png" alt="" data-click="1" onclick="switchmusic(this)" style="width:40px;" id="conbtn">
+
+          </div>
+          <div class="aui-col-5 ">
+              <img src="../image/test/xyq.png" alt="" data-click="0" onclick="changeMusic('1')" style="width:40px;">
+
+          </div>
+          <div class="aui-col-5 ">
+              <img src="../image/test/caidan.png" alt="" style="width:40px;">
+          </div>
+
+      </div>
+  </section>
+
+</div>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+var cnumber=null;
+var conbtn=$api.byId('conbtn');
+var pinglunnum=$api.byId('pinglunnum');
+  var jdt = $api.byId('jdt');
+var musicname=$api.byId('musicname');
+var musicsinger=$api.byId('musicsinger');
+var playdisc=$api.byId('playdisc');
+  var range = $api.byId('range');
+	var barleft = 0;
+		var time=0;
+var  musics=$api.getStorage("musics");
+var index=$api.getStorage("index");
+var music=musics[index];
+	var end=$api.byId('end');
+	var start=$api.byId('str');
+	function addmusiccnumber(){
+		api.ajax({
+				url: getURL_T()+'/music/traffic',
+				method: 'get',
+				data: {
+						values: {
+							  id: music.id
+
+						}
+				}
+		});
+	}
+	function goback() {
+	api.closeWin({name:'musicplay_body'});
+	}
+function playmusic () {
+		playdisc.style.webkitAnimationPlayState = 'running'
+  var audioStreamer = api.require('audioStreamer');
+  audioStreamer.openPlayer();
+
+}
+
+function stopmusic () {
+	playdisc.style.webkitAnimationPlayState = 'paused';
+  var audioStreamer = api.require('audioStreamer');
+  audioStreamer.pause();
+
+}
+
+function switchmusic (button) {
+
+	var click = conbtn.getAttribute("data-click");
+
+	if (click == 0) {
+		// 点开
+		conbtn.setAttribute("data-click", 1);
+		conbtn.src = "../image/musicplay/play_btn_pause.png";
+		playmusic ();
+	}else {
+		// 关闭
+		conbtn.setAttribute("data-click", 0);
+		conbtn.src = "../image/musicplay/play_btn_play.png";
+		stopmusic ();
+	}
+}
+
+window.onload = function  () {
+	var playbg = document.getElementsByClassName('play-up')[0];
+	playbg.style.height = document.documentElement.clientHeight +(-75)+ 'px';
+	$api.text(start, formatSeconds(0));
+		$api.attr(jdt, 'style', 'width:0px');
+	//	$api.attr(document.getElementById("range"), 'value','"'+ ret.current / time * 100+'"');
+		document.getElementById("range").value=0;
+}
+//将秒数转换为分秒
+function formatSeconds(value) {
+	        var secondTime = parseInt(value);// 秒
+	        var minuteTime = 0;// 分
+					if(secondTime<10){
+						return "00:0"+parseInt(secondTime);
+					}else if (secondTime>=10&&secondTime<60) {
+							return "00:"+parseInt(secondTime);
+					}
+	        else {//如果秒数大于60，将秒数转换成整数
+	            //获取分钟，除以60取整数，得到整数分钟
+	            minuteTime = parseInt(secondTime / 60);
+	            //获取秒数，秒数取佘，得到整数秒数
+	            xtime = parseInt(secondTime % 60);
+							if(xtime<10){
+								return "0" + parseInt(minuteTime)+ ":0"+parseInt(xtime);
+							}else {
+								return "0" + parseInt(minuteTime)+ ":"+parseInt(xtime);
+							}
+	        }
+
+	    }
+function changeMusic(x){
+	if(x=='-1'){
+			index-=1;
+			if(index<0){
+				index=musics.length-1;
+			}
+			$api.setStorage('index', index);
+
+	}
+	if(x=='1'){
+		index+=1;
+		if(index>=musics.length){
+			index=0;
+		}
+		$api.setStorage('index', index);
+	}
+	music =musics[index];
+	if(music!=null){
+			$api.text(musicname, music.name);
+				$api.text(musicsinger, music.pname);
+				$api.text(pinglunnum, music.pnumber);
+					$api.attr(playdisc, 'src', getURL_N()+music.image);
+					conbtn.setAttribute("data-click", 1);
+					conbtn.src = "../image/musicplay/play_btn_pause.png";
+					addmusiccnumber();
+					$api.text(start, formatSeconds(0));
+						$api.attr(jdt, 'style', 'width:0px');
+					//	$api.attr(document.getElementById("range"), 'value','"'+ ret.current / time * 100+'"');
+						document.getElementById("range").value=0 ;
+					var audioStreamer = api.require('audioStreamer');
+				audioStreamer.openPlayer({
+						path: getURL_N()+ music.mp3,
+				}, function(ret) {
+						if (ret.status) {
+							$api.text(end, formatSeconds(ret.duration));
+							time=ret.duration;
+
+						}
+				});
+	}
+
+}
+
+apiready = function  () {
+	var header = $api.byId('secHeader');
+		var headerPos = $api.offset(header);
+			$api.fixStatusBar(header);
+	if(music!=null){
+			$api.text(musicname, music.name);
+				$api.text(musicsinger, music.pname);
+					$api.text(pinglunnum, music.pnumber);
+				  $api.attr(playdisc, 'src', getURL_N()+music.image);
+					addmusiccnumber();
+					var audioStreamer = api.require('audioStreamer');
+				audioStreamer.openPlayer({
+						path: getURL_N()+ music.mp3,
+				}, function(ret) {
+						if (ret.status) {
+							$api.text(end, formatSeconds(ret.duration));
+							time=ret.duration;
+						}
+				});
+	}
+
+audioStreamer.addEventListener({
+}, function(ret) {
+    console.log(ret.state);
+		//播放完成
+		if(ret.state=="finished"){
+				changeMusic('1')
+		}
+		//准备完成
+		if(ret.state=="prepare"){
+			playdisc.style.webkitAnimationPlayState = 'running'
+		}
+		//缓存
+		if(ret.state=="buffering"){
+			// console.log("正在缓存")
+			// 	$api.text(end, "缓存中...");
+			// 	playdisc.style.webkitAnimationPlayState = 'paused'
+		}
+		//暂停
+		if(ret.state=="pause"){
+			playdisc.style.webkitAnimationPlayState = 'paused'
+		}
+		//播放
+		if(ret.state=="resume"){
+			playdisc.style.webkitAnimationPlayState = 'running'
+		}
+});
+
+audioStreamer.addProgressListener({
+}, function(ret) {
+
+	audioStreamer.getCurrentTime(function(ret) {
+		$api.text(start, formatSeconds(ret.current));
+			$api.attr(jdt, 'style', 'width:' +(ret.current / time * 300) + 'px');
+		//	$api.attr(document.getElementById("range"), 'value','"'+ ret.current / time * 100+'"');
+			document.getElementById("range").value=ret.current / time * 100;
+	});
+
+});
+}
+//设置快进后退
+document.getElementById("range").addEventListener("change", function() {
+		var startTime = this.value / 100 * time;
+var audioStreamer = api.require('audioStreamer');
+audioStreamer.seekToTime({
+   time: startTime
+});
+		$api.text(start, formatSeconds(startTime));
+		$api.attr(jdt, 'style', 'width:' +(startTime / time * 300) + 'px');
+});
+
+function openNewFrame(frame){
+		var list=$api.getStorage('myplaylists');
+  api.openFrame({
+      name:frame,
+      url: './'+frame+'.html',
+      rect: {
+          x: 0,
+          y: 0,
+          w: api.winWidth,
+          h: api.winHeight
+
+      },
+      pageParam: {
+          music: music,
+          playlist:list
+      },
+      bounces: false,
+    bgColor: 'rgba(0,0,0,0.6)'
+
+  });
+
+}
+function openplayer(){
+  api.openWin({
+      name: 'player_top',
+      url: './player_top.html',
+      pageParam: {
+          pid: music.pid,
+          tag:"playlist"
+      }
+  });
+
+}
+function opencomments(){
+	api.openWin({
+      name: 'comments_top',
+      url: './comments_top.html',
+      pageParam: {
+          obj: music,
+          tag:"music"
+      }
+  });
+}
+</script>
+</html>

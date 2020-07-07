@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="copyright" content="www.apicloud.com" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<title>主播电台</title>
+<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../../css/aui.css">
+<style>
+
+</style>
+</head>
+<body>
+
+  <div class="aui-card-list">
+      <div class="aui-card-list-header aui-card-list-user aui-border-b">
+          <div class="aui-card-list-user-avatar" >
+              <img src="../../image/login_bg.jpg" class="aui-img-round" style="width:30px;height:30px" id="user_img"/>
+          </div>
+          <div class="aui-card-list-user-name">
+              <div id="user_name">AUI</div>
+              <small id="dy_time">1天前</small>
+          </div>
+          <div class="aui-card-list-user-info" id="user_ctiy">北京朝阳</div>
+      </div>
+      <div class="aui-card-list-content-padded" >
+					<div id="dy_comment">dasdasdasdasdasd</div>
+          <img src="../../image/login_bg.jpg"  style="height:200px;width:200px" id="dy_img"/>
+      </div>
+      <div class="aui-card-list-footer aui-border-t">
+          <div id="dy_pl"></div>
+          <div id="dy_dz"></div>
+          <div id="dy_fx"></div>
+      </div>
+  </div>
+
+<div>热门评论</div>
+<div id="commentbody"></div>
+
+
+<footer class="aui-bar aui-bar-tab aui-margin-t-15 aui-margin-b-15">
+      <div class="aui-bar-tab-item aui-padded-l-15 aui-padded-r-15" tapmode style="width: auto;">
+          <!-- <div class="search-input aui-font-size-14" id="pingluncomment">请输入评论内容</div> -->
+          <input class="search-input aui-font-size-14" placeholder="请输入评论内容" id="pingluncomment">
+      </div>
+
+      <div class="aui-bar-tab-item" tapmode style="width: 2.2rem;">
+          <i class="aui-iconfont aui-icon-paper" onclick="sendpinglun()"></i>
+      </div>
+      <!-- <div class="aui-bar-tab-item" tapmode style="width: 2.2rem;">
+          <i class="aui-iconfont aui-icon-star"></i>
+      </div>
+      <div class="aui-bar-tab-item" tapmode style="width: 2.2rem;">
+          <i class="aui-iconfont aui-icon-share"></i>
+      </div> -->
+  </footer>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js"></script>
+<script type="text/javascript">
+var dy=null;
+var did=null;
+var user=$api.getStorage('user');
+var user_img=$api.byId('user_img');
+var user_name=$api.byId('user_name');
+var dy_time=$api.byId('dy_time');
+var user_ctiy=$api.byId('user_ctiy');
+var dy_comment=$api.byId('dy_comment');
+var dy_img=$api.byId('dy_img');
+var dy_pl=$api.byId('dy_pl');
+var dy_dz=$api.byId('dy_dz');
+var dy_fx=$api.byId('dy_fx');
+var commentbody=$api.byId('commentbody');
+var commentslist=null;
+var znumber=null;
+var pnumber=null;
+var toast=new auiToast();
+function shuju() {
+  api.ajax({
+      url: getURL_T()+'/dynamic/selectId',
+      method: 'get',
+      data: {
+          values: {
+              id:did
+          }
+      }
+  },function(ret, err){
+      if (ret) {
+
+          if(ret.data!=null){
+            dy=ret.data;
+            $api.attr(user_img, 'src', getURL_N()+dy.uimage);
+              $api.attr(dy_img, 'src', getURL_N()+dy.file);
+            $api.text(user_name,dy.uname);
+            $api.text(dy_time,format(dy.time));
+            $api.text(user_ctiy,dy.ucity);
+            $api.text(dy_comment,dy.comment);
+            dy_pl.innerHTML='<i class="aui-iconfont aui-icon-note"></i>'+dy.pnumber;
+            dy_dz.innerHTML='<i class="aui-iconfont aui-icon-laud"></i>'+dy.znumber;
+            dy_fx.innerHTML='<i class="aui-iconfont aui-icon-star"></i>'+dy.fnumber;
+            api.ajax({
+                url: getURL_T()+'/dynamicComments/select',
+                method: 'get',
+                data: {
+                    values: {
+                        did: dy.id
+                    }
+                }
+            },function(ret, err){
+                if (ret) {
+                  if(ret.data!=null){
+                      commentslist=ret.data;
+                    var html='';
+                    for(var i=0;i<commentslist.length;i++){
+                      var div='  <div class="aui-card-list"><div class="aui-card-list-header aui-card-list-user aui-border-b">'
+                              +'  <div class="aui-card-list-user-avatar" >  <img src="'
+                              +getURL_N()+commentslist[i].image
+                              +'" class="aui-img-round" style="width:30px;height:30px" />'
+                              +'  </div>  <div class="aui-card-list-user-name"><div >'
+                              +commentslist[i].name
+                              +'</div><div class="special"><i class="aui-iconfont aui-icon-laud"></i>'
+                              +commentslist[i].znumber
+                              +'  </div></div><div class="aui-card-list-user-info" >'
+                              +format(commentslist[i].time)
+                              +'  </div></div><div class="aui-card-list-content-padded" ><div >'
+                              +commentslist[i].comment
+                              +'</div></div>  </div>'
+                          html+=div;
+                    }
+                    commentbody.innerHTML=html;
+                    var divs=document.getElementsByClassName('special');
+                    for(var i=0;i<divs.length;i++){
+                            divs[i].onclick=(function(arg){
+                          return function(){
+                               znumber=commentslist[arg].znumber+1;
+                               this.innerHTML='<i class="aui-iconfont aui-icon-laud"></i>'+znumber
+                               $api.attr(this, 'style', 'color:#D43C33');
+                               api.ajax({
+                                   url: getURL_T()+'/dynamicComments/update',
+                                   method: 'get',
+                                   data: {
+                                       values: {
+                                           id: commentslist[arg].id,
+                                           znumber:znumber
+                                       }
+                                   }
+                               });
+
+                              };
+                      })(i);
+                          }
+                          api.refreshHeaderLoadDone();
+              }
+                }
+            });
+            api.refreshHeaderLoadDone();
+          }
+      }
+  });
+
+}
+apiready = function  () {
+	did=api.pageParam.did;
+  shuju();
+  api.setRefreshHeaderInfo({
+      visible: true,
+      loadingImg: 'widget://image/refresh.png',
+      bgColor: '#E9967A',
+      textColor: '#fff',
+      textDown: '下拉刷新...',
+      textUp: '松开刷新...',
+      showTime: true
+  }, function(ret, err){
+    shuju();
+  });
+
+}
+function sendpinglun(){
+  var pingluncomment = $api.trim($api.val($api.byId('pingluncomment')));
+  if(commentslist==null){
+    pnumber=0;
+  }else{
+    pnumber=commentslist.length;
+  }
+  if(user==null){
+    api.confirm({
+        title: '提示',
+        msg: '您还没有登录,请先登录!',
+        buttons: ['确定', '取消']
+    }, function(ret, err) {
+        var index = ret.buttonIndex;
+        if(index==1){
+          api.openWin({
+            name: 'login_main',
+            url: './html/forth_frame/login_main.html',
+            pageParam:{
+              logintag:false
+            },
+              delay: 200
+          });
+        }
+    });
+  }else{
+      api.ajax({
+          url: getURL_T()+'/dynamicComments/add',
+          method: 'post',
+          data: {
+              values: {
+                  did: dy.id,
+                  uid:user.id,
+                  comment:pingluncomment
+              }
+          }
+      },function(ret, err){
+          if (ret) {
+              if(ret.data){
+                toast.success({
+                  title:"评论成功!",
+                  duration:2000
+                })
+                console.log(pnumber);
+                api.ajax({
+                    url: getURL_T()+'/dynamic/update',
+                    method: 'post',
+                    data: {
+                        values: {
+                            id: dy.id,
+                            pnumber:pnumber+1
+                        }
+                    }
+                });
+                myreload();
+              }
+          }
+      });
+  }
+}
+function myreload(){
+  window.location.reload();
+}
+</script>
+</html>

@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="0">
+    <title>音乐</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+
+    <style type="text/css">
+      .info_top{
+        height: 100px;
+        background-color: #ffffff;
+      }
+      .loginHide {
+          display: none;
+      }
+      .loginmeg {
+          text-align: center;
+          font-size: 20px;
+      }
+      .loginBox {
+          display: block;
+      }
+      .login_info{
+        width: 70%;
+        margin-left: auto;;
+        margin-right: auto;;
+        margin-top: 5%;
+        margin-bottom: 5%;
+      }
+    </style>
+</head>
+
+<body>
+
+  <!-- 顶部 -->
+<section class="aui-content" id="user-info" >
+  <div class="loginBox login_info" id="notlogin">
+      <div class="loginmeg">登录网易云音乐，享受更多好听的音乐</div>
+      <div class="login_input">
+        <p><div class="aui-btn aui-btn-danger aui-btn-block aui-btn-outlined" onclick="openNewWin('login_main')">登录</div></p>
+      </div>
+  </div>
+    <div class="aui-list aui-media-list aui-list-noborder  info_top loginHide" id="rellogin" onclick="openNewWin('updateUserinfo')">
+        <div class="aui-list-item aui-list-item-middle">
+            <div class="aui-media-list-item-inner ">
+                <div class="aui-list-item-media" style="width:3rem;">
+                    <img src="../image/back.png" class="aui-img-round" id="touxiang" >
+                </div>
+                <div class="aui-list-item-inner aui-list-item-arrow">
+                    <div class="aui-list-item-text text-white aui-font-size-18" id="username">名字</div>
+                    <div class="aui-list-item-text text-white">
+                       <div><i class="aui-iconfont aui-icon-location aui-font-size-12"></i> <div id="usercity" style="float:right"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="aui-content aui-grid aui-margin-b-15">
+    <div class="aui-row">
+        <div class="aui-col-xs-4 aui-border-r">
+            <div class="aui-gird-lable aui-font-size-12">动态</div>
+            <big class="aui-text-warning">0</big>
+
+        </div>
+        <div class="aui-col-xs-4 aui-border-r">
+          <div class="aui-gird-lable aui-font-size-12">关注</div>
+            <big class="aui-text-danger">0</big>
+
+        </div>
+        <div class="aui-col-xs-4">
+          <div class="aui-gird-lable aui-font-size-12">粉丝</div>
+            <big class="aui-text-success">0</big>
+
+        </div>
+    </div>
+</section>
+<section class="aui-content">
+    <ul class="aui-list aui-list-in aui-margin-b-15">
+        <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+                <img src="../image/frame04covermsg.png" alt="" class="">
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">我的消息</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+                <img src="../image/frame04coverpack.png" alt="" class="">
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">网易云音乐畅听流量包</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+                <img src="../image/frame04covertime.png" alt="" class="">
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">定时关闭</div>
+            </div>
+        </li>
+    </ul>
+    <ul class="aui-list aui-list-in">
+      <li class="aui-list-item">
+          <div class="aui-list-item-label-icon">
+            <img src="../image/frame04coversetting.png" alt="" class="">
+          </div>
+          <div class="aui-list-item-inner aui-list-item-arrow">
+              <div class="aui-list-item-title">设置</div>
+          </div>
+      </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+                <img src="../image/frame04covershare.png" alt="" class="">
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">分享网易云音乐</div>
+
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+                  <img src="../image/frame04coverinfo.png" alt="" class="">
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">关于</div>
+
+            </div>
+        </li>
+    </ul>
+</section>
+<p><div class="aui-btn aui-btn-danger aui-btn-block aui-btn-outlined login_info" onclick="loginOut('login_main')" id="loginout">退出登录</div></p>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+    var notlogin = $api.byId("notlogin");
+    var rellogin = $api.byId("rellogin");
+    var username = $api.byId("username");
+    var touxiang = $api.byId("touxiang");
+    var usercity=$api.byId("usercity");
+    var user = $api.getStorage('user');
+    var loginout = $api.byId("loginout");
+    if (user != null) {
+      $api.text(usercity, user.city);
+      $api.text(username, user.name);
+      $api.attr(touxiang, 'src',  getURL_N() + user.image);
+        if ($api.hasCls(rellogin, 'loginHide')) {
+            $api.removeCls(rellogin, 'loginHide');
+              $api.removeCls(loginout, 'loginHide');
+        }
+        $api.addCls(notlogin, 'loginHide');
+        $api.removeCls(notlogin, 'loginBox');
+
+    } else {
+        if ($api.hasCls(notlogin, 'loginHide')) {
+            $api.addCls(notlogin, 'loginBox');
+            $api.removeCls(notlogin, 'loginHide');
+        }
+        $api.addCls(rellogin, 'loginHide');
+        $api.addCls(loginout, 'loginHide');
+    }
+
+    function myreload(){
+      window.location.reload();
+    }
+    function openNewWin(winname) {
+        api.openWin({
+            name: winname,
+            url: './forth_frame/' + winname + '.html',
+            delay: 200
+        });
+    }
+  function loginOut(winname){
+    $api.clearStorage();
+      api.clearCache(function() {});
+    openNewWin(winname);
+  }
+    // apiready = function() {
+    //   shuju();
+    // }
+</script>
+
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="copyright" content="www.apicloud.com" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<title>正在播放</title>
+<link rel="stylesheet" type="text/css" href="../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../css/egret.css" />
+<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+
+<style>
+html,body {
+background: rgba(0,0,0,0);
+}
+</style>
+</head>
+<body >
+  <!-- <div id="back" style="width:100%;" onclick="goback()"></div>
+<footer style="position:fixed;bottom:0;width:100%" id="footer">
+  <div id="playlistbody"></div>
+</footer> -->
+
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../script/aui-dialog.js" ></script>
+<script type="text/javascript">
+var music=null;
+var list=$api.byId('list');
+apiready = function  () {
+  api.closeFrame({
+      name: 'morepopup'
+  });
+  api.closeFrame({
+      name: 'morepopup2'
+  });
+   var dialog = new auiDialog({})
+  var toast = new auiToast();
+  music=api.pageParam.music;
+  list=api.pageParam.playlist;
+  dialog.alert({
+  title:"提示",
+  msg:'是否从歌单删除',
+  buttons:['确定','取消']
+},function(ret){
+  if(ret){
+    var index=ret.buttonIndex;
+    if(index==1){
+    api.ajax({
+        url: getURL_T()+'/playlistCenter/delete',
+        method: 'post',
+        data: {
+            values: {
+              "mid":music.id,
+              "plid":list.id
+            }
+        }
+    },function(ret, err){
+        if (ret) {
+            if(ret.data){
+
+              toast.success({
+                        title:"删除成功",
+                        duration:2000
+                    });
+                goback();
+            }else{
+
+              toast.fail({
+                        title:"删除失败",
+                        duration:2000
+                    });
+              goback();
+            }
+        } else {
+            goback();
+            alert( JSON.stringify( err ) );
+
+        }
+    });
+  }else{
+    goback()
+
+  }
+  }
+})
+}
+function goback(){
+  api.closeFrame({
+      name: 'deletemusic'
+  });
+  api.execScript({
+      name: 'musicplaylist_top',
+      frameName: 'musicplaylist_body',
+      script: 'myreload()'
+  });
+}
+
+
+</script>
+</html>

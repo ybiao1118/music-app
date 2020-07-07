@@ -1,0 +1,521 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="0">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <style>
+    html,body {min-height: 100%;background-color: #f9f9f9;}
+.touxiang{
+  width: 30px;
+}
+.gxqminput{
+  width: 100%;
+  height: 100px;
+  margin-top: 2%;
+  background: #f9f9f9;
+  display: block;
+}
+    </style>
+</head>
+
+<body>
+  <header class="aui-bar aui-bar-nav" style="padding-top:25px;background-color:#D33A31" id="secHeader">
+    <a class="aui-pull-left" onclick="goback()" >
+        <span class="aui-iconfont aui-icon-left"></span>
+    </a>
+    <div class="aui-title">修改信息</div>
+</header>
+<div class="aui-content aui-margin-b-15">
+    <ul class="aui-list aui-list-in">
+        <li class="aui-list-item" onclick="updteImage()">
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">头像</div>
+                <div class="aui-list-item-right">
+                    <div style="position:relative;top:0; right:0"> <img id="touxiang" class="touxiang" src=""/></div>
+                </div>
+            </div>
+        </li>
+    <li class="aui-list-item" onclick="updateName()">
+        <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">昵称</div>
+            <div class="aui-list-item-right">
+                <div style="position:relative;top:0; right:0" id="nicheng"> </div>
+            </div>
+        </div>
+    </li>
+    <li class="aui-list-item" onclick="updateAge()">
+        <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">年龄</div>
+            <div class="aui-list-item-right">
+                <div style="position:relative;top:0; right:0" id="age"> </div>
+            </div>
+        </div>
+    </li>
+    <li class="aui-list-item" onclick="upadteSex()">
+        <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">性别</div>
+            <div class="aui-list-item-right">
+                <div style="position:relative;top:0; right:0" id="sex"> </div>
+            </div>
+        </div>
+    </li>
+    <li class="aui-list-item" onclick="updateCity()">
+        <div class="aui-list-item-inner aui-list-item-arrow">
+            <div class="aui-list-item-title">城市</div>
+            <div class="aui-list-item-right">
+                <div style="position:relative;top:0; right:0" id="city"> </div>
+            </div>
+        </div>
+    </li>
+    <li class="aui-list-item">
+           <div class="aui-list-item-inner">
+               <div class="aui-list-item-title">个人简介</div>
+           </div>
+       </li>
+     </ul>
+</div>
+<div id="gxqm" class="gxqminput" placeholder="这个人很懒什么都没留下" onclick="updateGxqm()"></div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui_compress.js"></script>
+<script type="text/javascript">
+var userimage=null;
+var base64Img=null;
+var toast = new auiToast();
+ var dialog = new auiDialog({});
+
+    var nicheng = $api.byId('nicheng');
+    var touxiang = $api.byId('touxiang');
+    var sex = $api.byId('sex');
+    var age = $api.byId('age');
+    var city = $api.byId('city');
+    var gxqm = $api.byId('gxqm');
+    var user = $api.getStorage('user');
+    apiready = function() {
+      var header = $api.byId('secHeader');
+         $api.fixStatusBar(header);
+        var headerPos = $api.offset(header);
+        if(user!=null){
+          api.ajax({
+              url: getURL_T()+'/user/select',
+              method: 'post',
+              data: {
+                  values: {
+                      id: user.id
+                  }
+              }
+          },function(ret, err){
+              if (ret) {
+                  if(ret.data!=null){
+                    user=ret.data;
+                    $api.text(nicheng, user.name);
+                    $api.text(sex, user.sex);
+                    $api.text(age, user.age);
+                    $api.text(city, user.city);
+                    $api.text(gxqm, user.introduce);
+                    if(user.introduce==null||user.introduce==""){
+                        $api.text(gxqm,"这个人很懒什么都没留下" );
+                    }
+                    touxiang.src= getURL_N() + user.image
+                    //$api.attr(touxiang, 'src', getURL_N() + user.image);
+                    console.log( getURL_N() + user.image)
+                  }
+              }
+          });
+
+        }
+    }
+    function goback () {
+    	api.closeWin({name:'updateUserinfo'});
+    api.execScript({
+        name: 'root',
+        frameName:'frame4_main',
+        script: 'myreload()'
+    });
+    }
+
+    function updateName() {
+      dialog.prompt({
+        title:"修改昵称",
+        text:'请输入昵称',
+        buttons:['取消','确定']
+    },function(ret){
+        if(ret.buttonIndex == 2){
+
+            temp=ret.text;
+            api.ajax({
+                   url: getURL_T()+'/user/update',
+                   method: 'post',
+                   dataType: 'json',
+                   data: {
+                       values: {
+                           "id": user.id,
+                           "name": temp
+                       }
+                   }
+               }, function(ret, err) {
+                   var data = ret.data;
+                   if (data == "true" || data == true) {
+                       user.name = temp;
+                       $api.setStorage('user', user);
+
+                       window.location.reload(true);
+                   } else {
+                     toast.fail({
+                               title:"修改失败",
+                               duration:2000
+                           });
+                   }
+               });
+        }
+    })
+    }
+
+    function updateAge() {
+      dialog.prompt({
+        title:"修改年龄",
+        text:'请输入年龄',
+        buttons:['取消','确定']
+    },function(ret){
+        temp=ret.text;
+        if(ret.buttonIndex == 2){
+          api.ajax({
+          url:  getURL_T()+'/user/update',
+          method: 'post',
+          dataType: 'json',
+          data: {
+              values: {
+                  // "id":"72fa3d57ca954996983732bd4185a83c",
+                  "id": user.id,
+                  "age": temp
+              }
+          }
+      }, function(ret, err) {
+          var data = ret.data;
+          if (data == "true" || data == true) {
+              user.age = temp;
+              $api.setStorage('user', user);
+              window.location.reload(true);
+          } else {
+            toast.fail({
+                      title:"修改失败",
+                      duration:2000
+                  });
+          }
+      });
+        }
+    })
+    }
+
+        function updateCity() {
+          dialog.prompt({
+              title:"修改城市",
+              text:'请输入城市',
+              buttons:['取消','确定']
+          },function(ret){
+              if(ret.buttonIndex == 2){
+                temp = ret.text;
+                api.ajax({
+                      url:  getURL_T()+'/user/update',
+                    method: 'post',
+                    dataType: 'json',
+                    data: {
+                        values: {
+                            // "id":"72fa3d57ca954996983732bd4185a83c",
+                            "id": user.id,
+                            "city": temp
+                        }
+                    }
+                }, function(ret, err) {
+                    var data = ret.data;
+                    if (data == "true" || data == true) {
+                        user.city = temp;
+                        $api.setStorage('user', user);
+                        window.location.reload(true);
+                    } else {
+                      toast.fail({
+                                title:"修改失败",
+                                duration:2000
+                            });
+                    }
+                });
+              }
+          })
+        }
+        function updateGxqm() {
+          dialog.prompt({
+          title:"修改个性签名",
+          text:'请输入个性签名',
+          buttons:['取消','确定']
+      },function(ret){
+          if(ret.buttonIndex == 2){
+            temp = ret.text;
+            api.ajax({
+                url:  getURL_T()+'/user/update',
+                method: 'post',
+                dataType: 'json',
+                data: {
+                    values: {
+                        // "id":"72fa3d57ca954996983732bd4185a83c",
+                        "id": user.id,
+                        "introduce": temp
+                    }
+                }
+            }, function(ret, err) {
+                var data = ret.data;
+                if (data == "true" || data == true) {
+                    user.introduce = temp;
+                    $api.setStorage('user', user);
+                    window.location.reload(true);
+                } else {
+                  toast.fail({
+                            title:"修改失败",
+                            duration:2000
+                        });
+                }
+            });
+          }
+      })
+        }
+        function upadteSex(){
+          var dialogBox = api.require('dialogBox');
+dialogBox.evaluation({
+    styles: {
+        bg: '#fff',
+        w: 300,
+        title: {
+            marginT: 20,
+            size: 15,
+            color: '#000',
+            bold: false
+        },
+        buttons: [{
+            marginB: 0,
+            marginL: 0,
+            w: 200,
+            h: 35,
+            bg: '#fff',
+            color: '#D33A31',
+            size: 12
+        }, {
+            marginB: 0,
+            marginL: 0,
+            w: 200,
+            h: 35,
+            bg: '#fff',
+            color: '#D33A31',
+            size: 12
+        }]
+    },
+    texts: {
+        title: '修改性别',
+        buttons: [{
+            text: '男'
+        }, {
+            text: '女'
+        }]
+    }
+}, function(ret, err) {
+    if (ret) {
+
+        var temp=null;
+        if(ret.index==0){
+          temp="男";
+        }else {
+          temp="女";
+        }
+        api.ajax({
+            url:  getURL_T()+'/user/update',
+            method: 'post',
+            dataType: 'json',
+            data: {
+                values: {
+                    // "id":"72fa3d57ca954996983732bd4185a83c",
+                    "id": user.id,
+                    "sex": temp
+                }
+            }
+        }, function(ret, err) {
+            var data = ret.data;
+            if (data == "true" || data == true) {
+                user.sex = temp;
+                $api.setStorage('user', user);
+                var dialogBox = api.require('dialogBox');
+                dialogBox.close({
+                    dialogName: 'evaluation'
+                });
+                window.location.reload(true);
+            } else {
+                api.toast({
+                    msg: '修改失败',
+                    duration: 2000,
+                    location: 'middle'
+                });
+            }
+        });
+        var dialogBox = api.require('dialogBox');
+        dialogBox.close({
+            dialogName: 'evaluation'
+        });
+    } else {
+      var dialogBox = api.require('dialogBox');
+      dialogBox.close({
+          dialogName: 'evaluation'
+      });
+    }
+});
+        }
+
+        function updteImage() {
+            api.actionSheet({
+                title: '上传头像',
+                cancelTitle: '取消',
+                buttons: ['拍照', '相册']
+            }, function(ret, err) {
+                if (ret) {
+                    getPicture(ret.buttonIndex);
+                }
+            });
+        }
+
+        function getPicture(sourceType) {
+            if (sourceType == 1) { // 拍照
+                //获取一张图片
+                api.getPicture({
+                    sourceType: 'camera',
+                    encodingType: 'png',
+                    mediaValue: 'pic',
+                    allowEdit: false,
+                    quality: 90,
+                    saveToPhotoAlbum: true
+                }, function(ret, err) {
+                    // 获取拍照数据并处理
+                    if (ret) {
+                        ajaxsendImg( ret.data);
+
+                    }
+                });
+            } else if (sourceType == 2) { // 从相机中选择
+                //UIMediaScanner 是一个多媒体扫描器，可扫描系统的图片、视频等多媒体资源
+                var obj = api.require('UIMediaScanner');
+                obj.open({
+                    //返回的资源种类,picture（图片）,video（视频）,all（图片和视频）
+                    type: 'picture',
+                    //（可选项）图片显示的列数，须大于1
+                    column: 4,
+                    max: 1,
+                    //（可选项）图片排序方式,asc（旧->新）,desc（新->旧）
+                    sort: {
+                        key: 'time',
+                        order: 'desc'
+                    },
+                    //（可选项）模块各部分的文字内容
+                    texts: {
+                        stateText: '已选择*项',
+                        cancelText: '取消',
+                        finishText: '完成'
+                    },
+                    styles: {
+                        bg: '#fff',
+                        mark: {
+                            icon: '',
+                            position: 'bottom_right',
+                            size: 20
+                        },
+                        nav: {
+                            bg: '#D33A31',
+                            stateColor: '#000',
+                            stateSize: 18,
+                            cancleBg: 'rgba(0,0,0,0)',
+                            cancelColor: '#000',
+                            cancelSize: 18,
+                            finishBg: 'rgba(0,0,0,0)',
+                            finishColor: '#000',
+                            finishSize: 18
+                        }
+                    }
+                }, function(ret) {
+                    // 获取图片数据并处理
+                    if (ret) {
+                        if (ret.hasOwnProperty("list")) {
+                          api.showProgress({
+                              title: '正在上传...',
+                              modal: true
+                          });
+                          ajaxsendImg(ret.list[0].thumbPath);
+                        }
+
+
+                    }
+                });
+            }
+        }
+    function ajaxsendImg(path){
+      auiCompress(path,{
+            width:300,
+            quantity:1,
+success: function (ret) {
+  base64Img=ret.base64;
+  api.ajax({
+       url:  getURL_T()+'/user/update',
+      method: 'post',
+      dataType: 'json',
+      async:false,
+      data: {
+          values: {
+              "id": user.id,
+               image:base64Img
+          }
+      }
+  }, function(ret, err) {
+      var data = ret.data;
+      if (data == "true" || data == true) {
+        if(user!=null){
+          api.ajax({
+              url: getURL_T()+'/user/select',
+              method: 'post',
+              data: {
+                  values: {
+                      id: user.id
+                  }
+              }
+          },function(ret, err){
+              if (ret) {
+                  if(ret.data!=null){
+                    user=ret.data;
+                    $api.setStorage('user', user);
+                  }
+              }
+          });
+
+        }
+            api.hideProgress();
+            api.clearCache(function() {});
+          window.location.reload(true);
+      } else {
+          api.toast({
+              msg: '修改失败',
+              duration: 2000,
+              location: 'middle'
+          });
+           // api.hideProgress();
+      }
+  });
+}
+});
+    }
+</script>
+
+</html>

@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="copyright" content="www.apicloud.com" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<title>正在播放</title>
+<link rel="stylesheet" type="text/css" href="../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../css/egret.css" />
+<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+
+<style>
+html,body {
+background: rgba(0,0,0,0);
+}
+</style>
+</head>
+<body >
+  <div id="back" style="width:100%;" onclick="goback()"></div>
+<footer style="position:fixed;bottom:0;width:100%" id="footer">
+  <div class="aui-content">
+          <ul class="aui-list">
+              <li class="aui-list-header" id="musicname">音乐名</li>
+              <li class="aui-list-item" onclick="openNewFrame('addplaylist')">
+                  <div class="aui-list-item-label-icon">
+                      <!-- <i class="aui-iconfont aui-icon-home"></i> -->
+                    <img src="../image/musiclist/musiclistcollect.png" alt=""  style="width:30px">
+                  </div>
+                  <div class="aui-list-item-inner">
+                    添加到歌单
+                  </div>
+              </li>
+              <li class="aui-list-item">
+                  <div class="aui-list-item-label-icon">
+                    <img src="../image/musiclist/musiclistdown.png" alt="" style="width:30px">
+                  </div>
+                  <div class="aui-list-item-inner">
+                    下载
+                  </div>
+              </li>
+              <li class="aui-list-item" onclick="opencomments()">
+                  <div class="aui-list-item-label-icon">
+                    <img src="../image/musiclist/musiclistcommet.png" alt=""  style="width:30px">
+                  </div>
+                  <div class="aui-list-item-inner" id="pinglunnum">
+                    评论
+                  </div>
+              </li>
+              <li class="aui-list-item">
+                  <div class="aui-list-item-label-icon">
+                    <img src="../image/musiclist/musiclistshare.png" alt=""  style="width:30px">
+                  </div>
+                  <div class="aui-list-item-inner">
+                    分享
+                  </div>
+              </li>
+              <li class="aui-list-item" onclick="openplayer()">
+                  <div class="aui-list-item-label-icon">
+                    <img src="../image/musiclist/musiclistshare.png" alt=""  style="width:30px">
+                  </div>
+                  <div class="aui-list-item-inner" id="musicplayer">
+                    歌手
+                  </div>
+              </li>
+
+          </ul>
+      </div>
+</footer>
+
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+var music=null;
+var list=null;
+var myplaylists=$api.getStorage('myplaylists');
+var footer=$api.byId('footer');
+var back=$api.byId('back');
+var musicname=$api.byId('musicname');
+var pinglunnum=$api.byId('pinglunnum');
+var musicplayer=$api.byId('musicplayer')
+apiready = function  () {
+  music=api.pageParam.music;
+  list=api.pageParam.playlist;
+  var footerPos = $api.offset(footer);
+  $api.attr(back, 'style', 'height:'+(api.winHeight-footerPos.h)+'px');
+  if(music!=null||music!=''){
+    $api.text(musicname, music.name);
+    $api.text(pinglunnum, '评论('+music.pnumber+')');
+      $api.text(musicplayer, '歌手:'+music.pname);
+  }
+}
+function goback(){
+  api.closeFrame({
+      name: 'morepopup2'
+  });
+
+}
+function openNewFrame(frame){
+  api.openFrame({
+      name:frame,
+      url: './'+frame+'.html',
+      rect: {
+          x: 0,
+          y: 0,
+          w: api.winWidth,
+          h: api.winHeight
+
+      },
+      pageParam: {
+          music: music,
+          playlist:list
+      },
+      bounces: false,
+    bgColor: 'rgba(0,0,0,0.6)'
+
+  });
+
+}
+function openplayer(){
+  api.openWin({
+      name: 'player_top',
+      url: './player_top.html',
+      pageParam: {
+          pid: music.pid,
+          tag:"playlist"
+      }
+  });
+
+}
+function opencomments(){
+	api.openWin({
+      name: 'comments_top',
+      url: './comments_top.html',
+      pageParam: {
+          obj: music,
+          tag:"music"
+      }
+  });
+}
+</script>
+</html>

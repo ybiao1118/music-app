@@ -1,0 +1,306 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>音乐</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+
+    <style type="text/css">
+      .info_top{
+        height: 100px;
+        background-color: #ffffff;
+      }
+      .loginHide {
+          display: none;
+      }
+
+      .loginmeg {
+          text-align: center;
+          font-size: 20px;
+      }
+
+      .loginBox {
+          display: block;
+      }
+      .login_info{
+
+        width: 70%;
+        margin-left: auto;;
+        margin-right: auto;;
+        margin-top: 5%;
+        margin-bottom: 5%;
+      }
+      .egret-dark-title {height: 2em; line-height: 2em; font-size: 1em; background-color: #e7e7e7; color: #666; padding-left: 10px; width: 100%;}
+      .wdgd img{
+        width: 30px;
+        margin-right: 30px;
+        float: right;
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+      .wdgd{
+        display:inline;
+        width: 30%;
+       /*display: inline-block;*/
+      }
+    </style>
+</head>
+
+<body>
+
+<section class="aui-content">
+    <ul class="aui-list aui-list-in aui-margin-b-15">
+        <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+              	<img src="../image/frame02cover/bdmusic.png" alt="" style="width:50px">
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">本地音乐</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+              	<img src="../image/frame02cover/frame02cover02.png" alt="" style="width:50px">
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">最近播放</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+              	<img src="../image/frame02cover/frame02cover01.png" alt="" style="width:50px">
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">下载管理</div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-label-icon">
+              <img src="../image/frame02cover/wdsc.png" alt="" style="width:50px">
+            </div>
+            <div class="aui-list-item-inner aui-list-item-arrow">
+                <div class="aui-list-item-title">我的收藏</div>
+            </div>
+        </li>
+    </ul>
+</section>
+<div class="egret-dark-title" >
+  <div id="listnum" class="wdgd">我创建的歌单(0)</div>
+<div class="wdgd"><img src="../image/more.png" onclick="menufun()"/></div>
+</div>
+<!-- <section class="aui-content" id="playlistbody"></section> -->
+<div id="playlistbody"></div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+var user=$api.getStorage("user");
+var playlistbody=$api.byId('playlistbody');
+var listnum=$api.byId('listnum');
+var playlist=null;
+var moreimg=null;
+var quxiaoimg=null;
+var divs=null;
+function shuju(){
+  if(user!=null){
+    api.ajax({
+        // url: URL+'/playlist/select',
+        url: getURL_T()+'/playlist/select',
+        method: 'get',
+        dataType: 'json',
+        data: {
+            values: {
+                "uid":user.id
+            }
+        }
+    },function(ret,err){
+      if(ret){
+       playlist=ret.data;
+       $api.setStorage('myplaylists', playlist);
+       $api.text(listnum, '我创建的歌单('+playlist.length+')');
+
+        var html='';
+        var divs1=''
+        var div1='<section class="aui-content"><ul class="aui-list aui-list-in aui-margin-b-15">'
+      for(var i=0;i<playlist.length;i++){
+          var div2='<li class="aui-list-item special"><div class="aui-list-item-label-icon"><img src="../image/frame03cover/frame03cover02.jpg"class="playlistimg" style="width:50px"> </div>'
+                    +'<div class="aui-list-item-inner "><div class="aui-list-item-title">'
+                    +playlist[i].name
+                    +'</div><img src="../image/cm2_list_icn_arr.png" class="moreimg" style="width:15px;display:block"/><img src="../image/quxiao.png" class="quxiaoimg" style="width:15px;display:none"/>'
+                    +'</div></li>'
+
+          divs1+=div2;
+      }
+      var div3='</ul></section>'
+      html=div1+divs1+div3;
+      playlistbody.innerHTML=html;
+      divs=document.getElementsByClassName('special');
+      moreimg=document.getElementsByClassName('moreimg');
+      quxiaoimg=document.getElementsByClassName('quxiaoimg');
+      var imgs=document.getElementsByClassName('playlistimg');
+      for(var i=0;i<divs.length;i++){
+
+              if(playlist[i].image!=null){
+              $api.attr(imgs[i], 'src', getURL_N()+playlist[i].image);
+              }
+              divs[i].onclick=(function(arg){
+            return function(){
+                 openNewWind('musicplaylist_top',arg)
+                };
+        })(i);
+            }
+            api.refreshHeaderLoadDone();
+      }
+    });
+  }
+api.refreshHeaderLoadDone();
+}
+apiready = function(){
+    shuju();
+    api.setRefreshHeaderInfo({
+        visible: true,
+        loadingImg: 'widget://image/refresh.png',
+        bgColor: '#E9967A',
+        textColor: '#fff',
+        textDown: '下拉刷新...',
+        textUp: '松开刷新...',
+        showTime: true
+    }, function(ret, err){
+      shuju();
+    });
+
+
+}
+
+function openNewWind(wname,index){
+  if(user==null){
+    api.confirm({
+        title: '提示',
+        msg: '您还没有登录,请先登录!',
+        buttons: ['确定', '取消']
+    }, function(ret, err) {
+        var index = ret.buttonIndex;
+        if(index==1){
+          api.openWin({
+              name: 'login',
+              url: './login.html',
+              pageParam:{
+                logintag:false
+              },
+              delay: 200
+          });
+        }
+    });
+  }else{
+    api.openWin({
+        name: wname,
+        url: './'+wname+'.html',
+        pageParam: {
+        plid:playlist[index].id
+          }
+    });
+  }
+}
+function menufun(){
+  api.openFrame({
+      name: 'playlistpopup',
+      url: './playlistpopup.html',
+      rect: {
+          x: 0,
+          y: 0,
+          w:api.winWidth,
+          h:api.winHeight
+      },
+      pageParam:{
+        list:playlist
+      },
+      bounces: false,
+      bgColor: 'rgba(0,0,0,0.6)',
+
+  });
+}
+function glplaylist(){
+    if(divs.length!=null){
+      for(var i=0;i<divs.length;i++){
+        if(moreimg[i].style.display=="block"){
+            moreimg[i].style.display="none";
+        }
+        if(quxiaoimg[i].style.display=="none"){
+            quxiaoimg[i].style.display="block";
+        }
+        divs[i].onclick=(function(arg){
+      return function(){
+        api.confirm({
+            title: '提示',
+            msg: '您确定要删除！',
+            buttons: ['确定', '取消']
+        }, function(ret, err) {
+            var index = ret.buttonIndex;
+            if(index==1){
+              delplaylist(playlist[arg].id);
+            }else {
+              for(var i=0;i<divs.length;i++){
+                if(moreimg[i].style.display=="none"){
+                    moreimg[i].style.display="block";
+                }
+                if(quxiaoimg[i].style.display=="block"){
+                    quxiaoimg[i].style.display="none";
+                }
+              }
+              for(var i=0;i<divs.length;i++){
+
+                      // if(playlist[i].image!=null){
+                      // $api.attr(imgs[i], 'src', getURL_N()+playlist[i].image);
+                      // }
+                      divs[i].onclick=(function(arg){
+                    return function(){
+                         openNewWind('musicplaylist_top',arg)
+                        };
+                })(i);
+                    }
+            }
+        });
+
+          };
+    })(i);
+      }
+    }
+}
+function delplaylist(plid){
+  api.ajax({
+      // url: URL+'/playlist/select',
+      url: getURL_T()+'/playlist/delete',
+      method: 'get',
+      dataType: 'json',
+      data: {
+          values: {
+              "id": plid
+          }
+      }
+  },function(ret, err){
+      if (ret) {
+          if(ret.data){
+            myreload();
+          }else {
+            api.toast({
+                msg: '删除失败',
+                duration: 2000,
+                location: 'middle'
+            });
+          }
+      } else {
+
+      }
+  });
+
+}
+function myreload(){
+  window.location.reload();
+}
+</script>
+
+</html>

@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>音乐</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+
+    <style type="text/css">
+      .info_top{
+        height: 100px;
+        background-color: #ffffff;
+      }
+      .loginHide {
+          display: none;
+      }
+
+      .loginmeg {
+          text-align: center;
+          font-size: 20px;
+      }
+
+      .loginBox {
+          display: block;
+      }
+      .login_info{
+
+        width: 70%;
+        margin-left: auto;;
+        margin-right: auto;;
+        margin-top: 5%;
+        margin-bottom: 5%;
+      }
+      .createrlogo{
+        width: 2em;
+      }
+    .list-item-name{
+      float: right;
+      margin-right: 10px;
+    }
+    .index_bofang{
+      width: 10%;
+      float: right;
+      margin-right: 10px;
+      display: inline-block;
+    }
+    .index_bofang img{
+      width: 30px;
+      margin-top: 10%;
+      /*margin-bottom: 20%;*/
+    }
+    </style>
+</head>
+
+<body>
+
+  <!-- 顶部 -->
+<section class="aui-content"  >
+    <div class="aui-list aui-media-list aui-list-noborder  info_top ">
+        <div class="aui-list-item aui-list-item-middle">
+            <div class="aui-media-list-item-inner ">
+              <div class="aui-list-item-media" style="width:3rem;">
+                  <img src="../image/back.png" class="aui-img-round" id="playlistimg" >
+              </div>
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-text text-white aui-font-size-18" id="playlistname">名字</div>
+                </div>
+                <div id="gzd" style="color:#D33A31;font-size:0.8em;margin-right:20px;width:30%;">关注度</div>
+            </div>
+        </div>
+    </div>
+    <div class="aui-tab" id="tab">
+      <div class="aui-tab-item aui-active" id="mytab_1">音乐</div>
+      <div class="aui-tab-item" id="mytab_2">歌手简介</div>
+  </div>
+</section>
+
+<div id="playbody" class="loginBox"></div>
+<div id="playergrjs" class="loginHide"></div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/aui-tab.js"></script>
+<script type="text/javascript">
+var player=null;
+var pid=null;
+var musiclist=null;
+var tag=null;
+var number=null;
+var playlistimg=$api.byId("playlistimg");
+var playlistname=$api.byId("playlistname");
+var playbody=$api.byId('playbody');
+var playergrjs=$api.byId('playergrjs');
+var gzd=$api.byId('gzd');
+var tab = new auiTab({
+    element:document.getElementById("tab"),
+},function(ret){
+    changediv(ret.index-1);
+});
+function changediv(index){
+  var mytab = $api.byId('tab');
+   var mytabAct = $api.dom(mytab, '.aui-tab-item.aui-active');
+   $api.removeCls(mytabAct, 'aui-active');
+   if(index=='0'||index==0){
+          $api.addCls(playbody, 'loginBox');
+          if ($api.hasCls(playergrjs, 'loginBox')) {
+              $api.removeCls(playergrjs, 'loginBox');
+                $api.addCls(playergrjs, 'loginHide');
+          }
+          if($api.hasCls(playbody, 'loginHide')){
+             $api.removeCls(playbody, 'loginHide');
+          }
+       $api.addCls($api.byId('mytab_1'), 'aui-active');
+   }else if(index=='1'||index==1){
+       $api.addCls($api.byId('mytab_2'), 'aui-active');
+       $api.addCls(playergrjs, 'loginBox');
+       if ($api.hasCls(playbody, 'loginBox')) {
+           $api.removeCls(playbody, 'loginBox');
+             $api.addCls(playbody, 'loginHide');
+       }
+       if($api.hasCls(playergrjs, 'loginHide')){
+          $api.removeCls(playergrjs, 'loginHide');
+       }
+   }
+
+}
+function openMyPopup(data){
+  api.openFrame({
+      name: 'morepopup2',
+      url: './morepopup2.html',
+      rect: {
+          x: 0,
+          y: 0,
+          w:api.winWidth,
+          h:api.winHeight
+      },
+      pageParam: {
+          music: data,
+          playlist:musiclist
+      },
+      bounces: false,
+      bgColor: 'rgba(0,0,0,0.6)',
+
+  });
+}
+
+function goback() {
+    api.closeWin({
+        name: 'player'
+    });
+
+}
+function openmusic(musics,index){
+api.openWin({
+    name: 'musicplay_body',
+    url: './musicplay_body.html',
+
+});
+$api.setStorage('musics', musics);
+$api.setStorage('index', index);
+}
+function shuju(){
+  if(pid!=null&&pid!=""){
+    api.ajax({
+        url:getURL_T()+'/play/select',
+        method: 'post',
+        data: {
+            values: {
+                id: pid
+            }
+        }
+    },function(ret, err){
+        if (ret) {
+          if(ret.data!=null){
+            player=ret.data[0];
+              $api.attr(playlistimg, 'src',getURL_N()+player.image);
+              $api.text(playlistname, player.name);
+              $api.text(playergrjs,player.comment);
+              $api.text(gzd, '关注度:'+player.snumber);
+  
+
+          }
+        }
+    });
+    api.ajax({
+        url: getURL_T()+'/music/select',
+        method: 'post',
+        data: {
+            values: {
+                pid: pid
+            }
+        }
+    },function(ret, err){
+        if (ret) {
+          musiclist=ret.data;
+          if(musiclist!=null&&musiclist!=""){
+
+            var html='';
+            var divs=''
+            var div1='<section class="aui-content"><ul class="aui-list aui-list-in aui-margin-b-15">'
+          for(var i=0;i<musiclist.length;i++){
+              var div2='<li class="aui-list-item "><div class="aui-list-item-label-icon ">'
+                        + (i+1)
+                        +'</div><div class="aui-list-item-inner special"><div class="aui-list-item-title">'
+                        +musiclist[i].name
+                        +'</div>'
+                        +'</div> <span class="aui-iconfont aui-icon-more aui-text-danger list_itme_more" style="margin-top:auto;margin-bottom:auto;margin-right:10px"></span></li>'
+
+              divs+=div2;
+          }
+          var div3='</ul></section>'
+          html=div1+divs+div3;
+          playbody.innerHTML=html;
+         var divs=document.getElementsByClassName('special');
+         for(var i=0;i<divs.length;i++){
+                 divs[i].onclick=(function(arg){
+               return function(){
+                    openmusic(musiclist,arg);
+                   };
+           })(i);
+               }
+               var mores=document.getElementsByClassName('list_itme_more');
+               for(var i=0;i<mores.length;i++){
+                       mores[i].onclick=(function(arg){
+                     return function(){
+                          openMyPopup(musiclist[arg]);
+
+                         };
+                 })(i);
+                     }
+          }
+        }
+    });
+    api.refreshHeaderLoadDone();
+  }
+}
+apiready = function  () {
+   pid=api.pageParam.pid;
+   tag=api.pageParam.tag;
+    shuju();
+    api.setRefreshHeaderInfo({
+        visible: true,
+        loadingImg: 'widget://image/refresh.png',
+        bgColor: '#E9967A',
+        textColor: '#fff',
+        textDown: '下拉刷新...',
+        textUp: '松开刷新...',
+        showTime: true
+    }, function(ret, err){
+        shuju();
+    });
+
+
+}
+
+function myreload(){
+  window.location.reload();
+}
+function openNewWin(wname){
+  var music =$api.getStorage("music");
+  api.openWin({
+      name: wname,
+      url: './'+wname+'.html',
+      scrollEnabled:false,
+      pageParam:{music:music}
+  });
+}
+</script>
+
+</html>

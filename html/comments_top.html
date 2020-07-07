@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>音乐</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+
+    <style type="text/css">
+    .info_top{
+      height: 100px;
+      background-color: #ffffff;
+    }
+    .loginHide {
+        display: none;
+    }
+
+    .loginmeg {
+        text-align: center;
+        font-size: 20px;
+    }
+
+    .loginBox {
+        display: block;
+    }
+    .login_info{
+
+      width: 70%;
+      margin-left: auto;;
+      margin-right: auto;;
+      margin-top: 5%;
+      margin-bottom: 5%;
+    }
+    .createrlogo{
+      width: 2em;
+    }
+  .list-item-name{
+    float: right;
+    margin-right: 10px;
+  }
+  .index_bofang{
+    width: 10%;
+    float: right;
+    margin-right: 10px;
+    display: inline-block;
+  }
+  .index_bofang img{
+    width: 30px;
+    margin-top: 10%;
+    /*margin-bottom: 20%;*/
+  }
+    </style>
+</head>
+
+<body>
+  <header class="aui-bar aui-bar-nav" style="padding-top:25px;background-color:#D33A31;" id="secHeader">
+    <a class="aui-pull-left" onclick="goback()" >
+        <span class="aui-iconfont aui-icon-left"></span>
+    </a>
+    <div class="aui-title" id="header_title">评论</div>
+    <div class="index_bofang">
+      <img src="../image/bofang.png" style="margin-bottom:0;width" onclick="openNewWin('musicplay_body')"></img>
+    </div>
+</header>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+var obj=null;
+var tag=null;
+function goback() {
+api.closeWin({name:'comments_top'});
+}
+apiready = function  () {
+var header = $api.byId('secHeader');
+  $api.fixStatusBar(header);
+  var headerPos = $api.offset(header);
+    var lists=$api.getStorage('myplaylists');
+    obj=api.pageParam.obj;
+    tag=api.pageParam.tag;
+
+    api.openFrame({
+        name: 'comments_body',
+        url: './comments_body.html',
+        rect: {
+            x: 0,
+            y: headerPos.h,
+            w: api.winWidth,
+            h: api.winHeight-headerPos.h
+        },
+        pageParam: {
+            obj: obj,
+            tag:tag
+        },
+
+    });
+
+
+}
+function openNewWin(wname){
+  var music =$api.getStorage("music");
+  api.openWin({
+      name: wname,
+      url: './'+wname+'.html',
+      scrollEnabled:false,
+      pageParam:{music:music}
+  });
+}
+</script>
+
+</html>

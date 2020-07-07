@@ -1,0 +1,220 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <style>
+    html,body {min-height: 100%;background-color: #f9f9f9;}
+    .login_input{
+          width: 80%;
+          margin: auto;
+           position: absolute;
+           left: 0;
+           right: 0;
+           /*margin-top: 20%;*/
+    }
+    .login_input .update_pwd{
+      margin-top: 5%;
+      float: left;
+      font-size: 1em;
+      color: #D33A31;
+    }
+    .login_input a{
+        margin-top: 5%;
+      float: right;
+      font-size: 1em;
+      color: #D33A31;
+    }
+    </style>
+</head>
+
+<body>
+
+    <header class="aui-bar aui-bar-nav" style="padding-top:25px;background-color:#D33A31" id="secHeader">
+      <a class="aui-pull-left" onclick="goback()" >
+          <span class="aui-iconfont aui-icon-left"></span>
+      </a>
+      <div class="aui-title">注册</div>
+  </header>
+      <div class="aui-content aui-margin-b-15">
+       <ul class="aui-list aui-form-list">
+           <li class="aui-list-item">
+               <div class="aui-list-item-inner">
+                   <div class="aui-list-item-label-icon">
+                       <i class="aui-iconfont aui-icon-mobile"></i>
+                   </div>
+                   <div class="aui-list-item-input">
+                       <input type="text" placeholder="请输入手机号"  id="username" >
+                   </div>
+               </div>
+           </li>
+           <li class="aui-list-item">
+               <div class="aui-list-item-inner">
+                   <div class="aui-list-item-label-icon">
+                       <i class="aui-iconfont aui-icon-lock"></i>
+                   </div>
+                   <div class="aui-list-item-input">
+                       <input type="password" placeholder="请输入密码"  id="pwd">
+                   </div>
+                   <div class="aui-list-item-label-icon">
+                       <i class="aui-iconfont aui-icon-display" onclick="changeType('pwd_i1')" data-click="1" id="pwd_i1"></i>
+                   </div>
+               </div>
+           </li>
+           <li class="aui-list-item">
+               <div class="aui-list-item-inner">
+                   <div class="aui-list-item-label-icon">
+                       <i class="aui-iconfont aui-icon-lock"></i>
+                   </div>
+                   <div class="aui-list-item-input">
+                       <input type="password" placeholder="请输入确密码"  id="qpwd">
+                   </div>
+                   <div class="aui-list-item-label-icon">
+                       <i class="aui-iconfont aui-icon-display" onclick="changeType('pwd_i2')" data-click="1" id="pwd_i2"></i>
+                   </div>
+               </div>
+           </li>
+       </ul>
+   </div>
+
+   <div class="login_input">
+     <p><div class="aui-btn aui-btn-danger aui-btn-block aui-btn-outlined" onclick="login()">注册</div></p>
+     <a href="#" class="find_pwd" onclick="openNewWin('login_top')">已有账号,立即登录</a>
+   </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript">
+var toast = new auiToast();
+ var dialog = new auiDialog({})
+    apiready = function() {
+      var header = $api.byId('secHeader');
+         $api.fixStatusBar(header);
+        var headerPos = $api.offset(header);
+    }
+    function goback () {
+    	api.closeWin({name:'reg'});
+    }
+    function openNewWin(winname) {
+        api.openWin({
+            name: winname,
+            url: './' + winname + '.html',
+            delay: 200
+        });
+
+    }
+    function login() {
+        var username = $api.trim($api.val($api.byId('username')));
+        var password =$api.trim( $api.val($api.byId('pwd')));
+        var qpassword =$api.trim( $api.val($api.byId('qpwd')));
+        if(username==""||password==""||qpassword==""){
+          toast.fail({
+                    title:"手机号码或者密码为空",
+                    duration:2000
+                });
+          return false;
+        }else{
+          if (!(/^1[34578]\d{9}$/.test(username))) {
+              toast.fail({
+                        title:"手机号码格式不对",
+                        duration:2000
+                    });
+              return false;
+          }else if (password.length<6||qpassword.length<6) {
+            toast.fail({
+                      title:"密码最少6位数",
+                      duration:2000
+                  });
+            return false;
+          } else if (password != qpassword) {
+
+              toast.fail({
+                        title:"密码不一致",
+                        duration:2000
+                    });
+              return false;
+          } else {
+              api.ajax({
+                  url: getURL_T()+'/user/add',
+                  method: 'post',
+                  dataType: 'json',
+                  data: {
+                      values: {
+                          "username": username,
+                          "password": password
+                      }
+                  }
+              }, function(ret, err) {
+
+                  if (ret) {
+                      var data = ret.data;
+                      if (data) {
+
+                    dialog.alert({
+                    title:"提示",
+                    msg:'注册成功，是否登录',
+                    buttons:['确定','取消']
+                },function(ret){
+                    if(ret){
+                      var index=ret.buttonIndex;
+                      if(index==1){
+                        api.openWin({
+                            name: 'login',
+                            url: './login.html',
+                            delay: 200
+                        });
+                      }
+                    }
+                })
+              }else {
+                toast.fail({
+                          title:"用户已经存在",
+                          duration:2000
+                      });
+              }
+                  }
+              });
+          }
+        }
+
+    }
+    function  changeType(id){
+      var pwd=$api.byId('pwd');
+      var qpwd=$api.byId('qpwd');
+      var pwd_i1=$api.byId('pwd_i1');
+        var pwd_i2=$api.byId('pwd_i2');
+
+      if(id=="pwd_i1"){
+          var click = pwd_i1.getAttribute("data-click");
+        if(click=="1"){
+            $api.attr(pwd, 'type', 'text');
+            pwd_i1.setAttribute("data-click","0");
+        }
+        if(click=="0"){
+          $api.attr(pwd, 'type', 'password');
+          pwd_i1.setAttribute("data-click","1");
+        }
+      }
+      if(id=="pwd_i2"){
+          var click = pwd_i2.getAttribute("data-click");
+        if(click=="1"){
+            $api.attr(qpwd, 'type', 'text');
+            pwd_i2.setAttribute("data-click","0");
+        }
+        if(click=="0"){
+          $api.attr(qpwd, 'type', 'password');
+          pwd_i2.setAttribute("data-click","1");
+        }
+      }
+
+    }
+</script>
+
+</html>

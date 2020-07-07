@@ -1,0 +1,638 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>音乐</title>
+    <link rel="stylesheet" type="text/css" href="./css/api.css" />
+    <link rel="stylesheet" type="text/css" href="./css/aui.css" />
+
+    <style type="text/css">
+    .titlebar {
+        display: none;
+    }
+
+    .activebar {
+        display: block;
+    }
+    .search{
+      background: #D43C33;
+
+    }
+    .index_bofang{
+      width: 10%;
+      display: inline-block;
+    }
+    .index_bofang img{
+      width: 30px;
+      margin-bottom: 20%;
+    }
+
+
+            /* 本地刷新图标 */
+
+            #localrefresh {
+                display: none;
+                float: right;
+                width: 40px;
+                padding: 5px 10px;
+            }
+
+      .header_title{
+        color:white;margin:auto auto;text-align:center;font-size:1em
+      }
+    </style>
+</head>
+
+<body>
+
+<header class="aui-bar aui-bar-nav activebar titlebar" id="firstHeader" style="padding-top:25px;background:#D43C33">
+<div style="width:100%;" id="mysearch">
+  <div style="  display: inline-block; width:85%;">
+  <div class="aui-searchbar search" id="search">
+        <div class="aui-searchbar-input aui-border-radius">
+            <i class="aui-iconfont aui-icon-search"></i>
+            <input type="search" placeholder="搜索音乐、歌词、电台" id="search-input">
+            <div class="aui-searchbar-clear-btn">
+                <i class="aui-iconfont aui-icon-close"></i>
+            </div>
+        </div>
+        <div class="aui-searchbar-btn" tapmode style="color:#f5f5f5">取消</div>
+    </div>
+  </div>
+    <div class="index_bofang">
+      <img src="./image/bofang.png" onclick="openNewWin('musicplay_body')"></img>
+    </div>
+</div>
+  <div class="aui-tab" id="tab">
+    <div class="aui-tab-item aui-active" id="mytab_1">推荐</div>
+    <div class="aui-tab-item" id="mytab_2">歌单</div>
+    <div class="aui-tab-item" id="mytab_3">排行榜</div>
+
+</div>
+</header>
+
+						<header class="aui-bar aui-bar-nav titlebar" style="padding-top:25px;background:#D43C33"  id="secHeader">
+              <div style="width:100%">
+                <div style="  display: inline-block; width:85%;">
+						    <div  class="header_title">我的音乐</div>
+              </div>
+                <div class="index_bofang">
+                  <img src="./image/bofang.png" style="margin-bottom:0" onclick="openNewWin('musicplay_body')"></img>
+                </div>
+                </div>
+						</header>
+
+<header class="aui-bar aui-bar-nav titlebar"style="padding-top:25px;background:#D43C33"  id="thridHeader">
+  <div style="width:100%">
+    <div style="color:#ffffff;font-size:1em;margin-left:10px;margin-top:10px;float:left" onclick="senddynamic()">发动态</div>
+    <div style="display: inline-block; width:70%;">
+    <div class="aui-bar aui-bar-btn aui-bar-btn-round" style="width:60%;" id="dynamicbar">
+            <div class="aui-bar-btn-item aui-active" id="sdynamic">朋友圈</div>
+            <div class="aui-bar-btn-item" id="mydynamic">我的动态</div>
+    </div>
+  </div>
+    <div class="index_bofang">
+      <img src="./image/bofang.png" style="margin-bottom:15px" onclick="openNewWin('musicplay_body')"></img>
+    </div>
+    </div>
+
+</header>
+<header class="aui-bar aui-bar-nav titlebar"style="padding-top:25px;background:#D43C33" id="fortheader">
+  <div style="width:100%">
+    <div style="  display: inline-block; width:85%;">
+		<div class="header_title">账号</div>
+  </div>
+    <div class="index_bofang">
+      <img src="./image/bofang.png" style="margin-bottom:0" onclick="openNewWin('musicplay_body')"></img>
+    </div>
+    </div>
+</header>
+
+</body>
+<script type="text/javascript" src="./script/api.js"></script>
+<script type="text/javascript" src="./script/aui-tab.js"></script>
+<script type="text/javascript" src="./script/common.js"></script>
+<script type="text/javascript">
+var keyWord=null;
+var user=$api.getStorage('user');
+//切换推荐、歌单、排行榜
+var tab = new auiTab({
+    element:document.getElementById("tab"),
+},function(ret){
+    setFrameGroupIndex('framegroup01',ret.index-1);
+});
+var tab1 = new auiTab({
+    element:document.getElementById("dynamicbar"),
+},function(ret){
+    if(ret.index-1==1){
+      if(user==null){
+        api.confirm({
+            title: '提示',
+            msg: '您还没有登录,请先登录!',
+            buttons: ['确定', '取消']
+        }, function(ret, err) {
+            var index = ret.buttonIndex;
+            if(index==1){
+              api.openWin({
+          		    name: 'login',
+          		    url: './html/forth_frame/login.html',
+          		    pageParam: {
+          		        name: 'test',
+                      logintag:false
+          		    }
+          		});
+            }
+        });
+
+      }else{
+          setFrameGroupIndex('framegroup02',ret.index-1);
+      }
+    }else {
+      setFrameGroupIndex('framegroup02',ret.index-1);
+    }
+
+});
+//dynamic_send
+function senddynamic(){
+  if(user==null){
+    api.confirm({
+        title: '提示',
+        msg: '您还没有登录,请先登录!',
+        buttons: ['确定', '取消']
+    }, function(ret, err) {
+        var index = ret.buttonIndex;
+        if(index==1){
+          api.openWin({
+              name: 'login',
+              url: './html/forth_frame/login.html',
+              pageParam: {
+                name: 'test',
+                logintag:false
+              }
+          });
+        }
+    });
+  }else {
+    api.openWin({
+        name: 'dynamic_send',
+        url: './html/third_frame/dynamic_send.html',
+
+    });
+  }
+
+}
+     // 切换头部
+   function changeHeader(index){
+     var lis = $api.domAll('.aui-bar.aui-bar-nav');
+     var i = 0,
+         len = lis.length;
+     var curLi = lis[index];
+
+     for (i; i < len; i++) {
+         var thisLi = lis[i];
+         if (thisLi === curLi) {
+             $api.addCls(thisLi, 'activebar');
+             $api.addCls(thisLi, 'activebar' + index);
+             continue;
+         } else {
+             if ($api.hasCls(thisLi, 'activebar')) {
+                 $api.removeCls(thisLi, 'activebar');
+                 $api.removeCls(thisLi, 'activebar' + i);
+             }
+         }
+     }
+      //  $api.fixStatusBar( $api.dom( '.aui-bar.aui-bar-nav.activebar') );
+   }
+
+    apiready = function() {
+        api.parseTapmode();
+        var firstHeader=$api.byId('firstHeader');
+        var mysearch=$api.byId('mysearch');
+        var mysearchPos=$api.offset(mysearch);
+         //$api.fixStatusBar(firstHeader);
+        var firstHeaderPos = $api.offset(firstHeader);
+        api.addEventListener({
+            name:'offline'
+        }, function(ret, err){
+          var dialogBox = api.require('dialogBox');
+dialogBox.popupAlert({
+  tapClose: false,
+  msg: {
+      content:'断网了,请检查网络!',
+      okBtnTitle: '确定'
+  },
+  styles: {
+      bg: '#fff',
+      maskBg:'rgba(0,0,0,0.5)',
+      h: 280,
+      msg :{
+          color : '#000000',
+          size  : 20,
+          maginLR: 10,
+          maginT: 15
+      },
+      border : {
+             left : '10 #FF0000',
+                 right : '10 #FF0000',
+             top : '10 #0000FF',
+            bottom : '10 #0000FF'
+      },
+      okBtn :{
+          bg: 'rgba(0,0,0,0)',
+          color: '#007FFF',
+          size: 12,
+          maginLR: 10,
+          maginB: 10
+      }
+  }
+}, function(ret) {
+  
+});
+        });
+    openFirstFramegroup(firstHeaderPos.h);
+    var searchBar = document.querySelector(".aui-searchbar");
+        var searchBarInput = document.querySelector(".aui-searchbar input");
+        var searchBarBtn = document.querySelector(".aui-searchbar .aui-searchbar-btn");
+        var searchBarClearBtn = document.querySelector(".aui-searchbar .aui-searchbar-clear-btn");
+        function openSearchFrame(frameName,list,type){
+          api.openFrame({
+              name: frameName,
+              url: './html/first_frame/'+frameName+'.html',
+              rect: {
+                  x: 0,
+                  y: mysearchPos.h,
+                  w: api.winWidth,
+                  h: api.winHeight-mysearchPos.h-60
+                  // api.winHeight-mysearchPos.h
+              },
+              pageParam: {
+                  list: list,
+                  type:type
+              }
+          });
+        }
+        if(searchBar){
+            searchBarInput.onclick = function(){
+                searchBarBtn.style.marginRight = 0;
+                openSearchFrame('search_player',null,null)
+            }
+            searchBarInput.oninput = function(){
+                if(this.value.length){
+                  keyWord=this.value
+                    searchBarClearBtn.style.display = 'block';
+                     searchBarBtn.classList.add("aui-text-info");
+                    searchBarBtn.textContent = "取消";
+                    api.ajax({
+                        url: getURL_T()+'/search',
+                        method: 'get',
+                        data: {
+                            values: {
+                                "keyWord":keyWord
+                            }
+
+                        }
+                    },function(ret, err){
+                        if (ret) {
+                          if(ret.status=200){
+                            openSearchFrame('search_result',ret.data,ret.message);
+                          }
+                        }
+                    });
+
+                }else{
+                    searchBarClearBtn.style.display = 'none';
+                    searchBarBtn.classList.remove("aui-text-info");
+                    searchBarBtn.textContent = "取消";
+                    api.closeFrame({
+                        name: 'search_result'
+                    });
+
+                }
+            }
+        }
+        searchBarClearBtn.onclick = function(){
+            this.style.display = 'none';
+            searchBarInput.value = '';
+            searchBarBtn.classList.remove("aui-text-info");
+            searchBarBtn.textContent = "取消";
+            api.closeFrame({
+                name: 'search_result'
+            });
+        }
+        searchBarBtn.onclick = function(){
+        var keywords = searchBarInput.value;
+    if(keywords.length){
+        searchBarClearBtn.style.display = 'none';
+      this.style.marginRight = "-"+this.offsetWidth+"px";
+      searchBarInput.value = '';
+      searchBarInput.blur();
+        api.closeFrame({
+            name: 'search_player'
+        });
+        api.closeFrame({
+            name: 'search_result'
+        });
+    }else{
+        this.style.marginRight = "-"+this.offsetWidth+"px";
+        searchBarInput.value = '';
+        searchBarInput.blur();
+        api.closeFrame({
+            name: 'search_player'
+        });
+    }
+
+
+    }
+
+        var NVTabBar = api.require('NVTabBar');
+        NVTabBar.open({
+            styles: {
+                bg: 'rgb(255, 255, 255)',
+                h: 60,
+                dividingLine: {
+                    width: 0.5,
+                    color: '#8a8a8a'
+                },
+                badge: {
+                    bgColor: '#f00',
+                    numColor: '#000',
+                    size: 6.0,
+                    centerY: 2
+                }
+            },
+            items: [{
+                w: api.winWidth / 4.0,
+                iconRect: {
+                    w: 25.0,
+                    h: 25.0,
+                },
+                icon: {
+                    normal: './image/find.png',
+                    highlight: './image/findsd.png',
+                    selected: './image/findsd.png'
+                },
+                title: {
+                    text: '发现',
+                    size: 12.0,
+                    normal: '#8a8a8a',
+                    selected: '#d81e06',
+                    marginB: 6.0
+                }
+            }, {
+                w: api.winWidth / 4.0,
+                iconRect: {
+                    w: 25.0,
+                    h: 25.0,
+                },
+                icon: {
+                    normal: './image/music.png',
+                    highlight: './image/musicsd.png',
+                    selected: './image/musicsd.png'
+                },
+                title: {
+                    text: '我的',
+                    size: 12.0,
+                    normal: '#8a8a8a',
+                    selected: '#d81e06',
+                    marginB: 6.0
+                }
+            }, {
+                w: api.winWidth / 4.0,
+                iconRect: {
+                    w: 25.0,
+                    h: 25.0,
+                },
+                icon: {
+                    normal: './image/friend.png',
+                    highlight: './image/friendsd.png',
+                    selected: './image/friendsd.png'
+                },
+                title: {
+                    text: '朋友',
+                    size: 12.0,
+                    normal: '#8a8a8a',
+                    selected: '#d81e06',
+                    marginB: 6.0
+                }
+            }, {
+                w: api.winWidth / 4.0,
+                iconRect: {
+                    w: 25.0,
+                    h: 25.0,
+                },
+                icon: {
+                    normal: './image/my.png',
+                    highlight: './image/mysd.png',
+                    selected: './image/mysd.png'
+                },
+                title: {
+                    text: '账号',
+                    size: 12.0,
+                    normal: '#8a8a8a',
+                    selected: '#d81e06',
+                    marginB: 6.0
+                }
+            }],
+            selectedIndex: 0
+        }, function(ret, err) {
+            if (ret) {
+
+                if (ret.eventType == "click" && ret.index == 0) {
+                    changeHeader(0);
+                      var firstHeader1 = $api.byId('firstHeader');
+                        //$api.fixStatusBar(firstHeader1);
+                    var firstHeaderPos1 = $api.offset(firstHeader1);
+
+                  changeMainHtml(0,firstHeaderPos1.h);
+                }
+                if (ret.eventType == "click" && ret.index == 1) {
+                    changeHeader(1);
+                       var secHeader = $api.byId('secHeader');
+                         //$api.fixStatusBar(secHeader);
+                        var secHeaderPos = $api.offset(secHeader);
+               changeMainHtml(1,secHeaderPos.h);
+                }
+                if (ret.eventType == "click" && ret.index == 2) {
+                    changeHeader(2);
+                    var thridHeader = $api.byId('thridHeader');
+                    //  $api.fixStatusBar(thridHeader);
+                    var thridHeaderPos = $api.offset(thridHeader);
+
+                      changeMainHtml(2,thridHeaderPos.h);
+                }
+                if (ret.eventType == "click" && ret.index == 3) {
+                    changeHeader(3);
+                    var fortheader = $api.byId('fortheader');
+                    //  $api.fixStatusBar(fortheader);
+                     var fortheaderPos = $api.offset(fortheader);
+
+                    changeMainHtml(3,fortheaderPos.h);
+
+
+                }
+
+            }
+        });
+    }
+
+    function changeMainHtml(index,height){
+       var frames = ['frame1_main', 'frame2_main', 'frame3_main', 'frame4_main'];
+       for(var i=0;i<frames.length;i++){
+         if(i==index){
+           if(i==0){
+             openFirstFramegroup(height);
+           }else if (i==2) {
+              openSecondFramegroup(height);
+           }else {
+             api.openFrame({
+                 name:frames[i],
+                 url: './html/'+frames[i]+'.html',
+                 reload:true,
+                 rect: {
+                   x: 0,
+                   y: height,
+                   w: 'auto',
+                   h: api.winHeight -height - 60
+                 }
+             });
+           }
+
+         }else {
+           api.setFrameAttr({
+                        name: frames[i],
+                        hidden: true
+                    });
+            if(index==0){
+              api.setFrameGroupAttr({
+                  name: 'framegroup02',
+                  hidden: true
+              });
+            }else if(index==2){
+              api.setFrameGroupAttr({
+                  name: 'framegroup01',
+                  hidden: true
+              });
+            }
+         }
+       }
+    }
+    function setFrameGroupIndex(frameGroupName,frameIndex) {
+        api.setFrameGroupIndex({
+            name: frameGroupName,
+            index: frameIndex,
+            scroll: true
+        });
+    }
+
+
+    // 打开第一个framegroup
+    function openFirstFramegroup(height) {
+        api.openFrameGroup({
+            name: 'framegroup01',
+            background: '#FFF',
+            scrollEnabled: true,
+            rect: {
+                x: 0,
+                y: height,
+                w: "auto",
+                h: api.winHeight -height- 60
+            },
+            index: 0,
+            frames: [{
+              // frame1_tuijian
+                name: 'frame1_tuijian',
+                url: './html/first_frame/frame1_tuijian.html',
+                bounces: false,
+            }, {
+                name: 'frame1_gedan',
+                url: './html/first_frame/frame1_gedan.html',
+                bounces: false,
+            }, {
+                name: 'frame1_phb',
+                url: './html/first_frame/frame1_phb.html',
+                bounces: false,
+            }]
+        }, function(ret) {
+          var mytab = $api.byId('tab');
+           var mytabAct = $api.dom(mytab, '.aui-tab-item.aui-active');
+           $api.removeCls(mytabAct, 'aui-active');
+
+          //  var name = ret.name;
+           var index = ret.index;
+           if(index==0){
+               $api.addCls($api.byId('mytab_1'), 'aui-active');
+           }else if(index==1){
+               $api.addCls($api.byId('mytab_2'), 'aui-active');
+           }else if(index==2){
+               $api.addCls($api.byId('mytab_3'), 'aui-active');
+           }
+            setFrameGroupIndex('framegroup01',ret.index);
+        });
+    }
+function openNewWin(wname){
+  var music =$api.getStorage("music");
+  api.openWin({
+      name: wname,
+      url: './html/'+wname+'.html',
+      scrollEnabled:false,
+      pageParam:{music:music}
+  });
+
+}
+// var wname=null;
+// var wurl=null;
+// 打开第二个framegroup
+function openSecondFramegroup(height) {
+  // name: 'login_main',
+  // url: './html/forth_frame/login_main.html',
+
+  // if(user==null){
+  //   wname='login_main';
+  //   wurl='./html/forth_frame/login_main.html';
+  // }else{
+  //   wname='mydynamic';
+  //   wurl='./html/third_frame/mydynamic.html';
+  // }
+    api.openFrameGroup({
+        name: 'framegroup02',
+        background: '#FFF',
+        scrollEnabled: true,
+        rect: {
+            x: 0,
+            y: height,
+            w: "auto",
+            h: api.winHeight -height- 60
+        },
+        index: 0,
+        frames: [{
+            name: 'dynamic_pyq',
+            url: './html/third_frame/dynamic_pyq.html',
+            bounces: false,
+        }, {
+            name: 'mydynamic',
+            url: './html/third_frame/mydynamic.html',
+            bounces: false,
+        }]
+    }, function(ret) {
+      var mybar = $api.byId('dynamicbar');
+       var mybarAct = $api.dom(mybar, '.aui-bar-btn-item.aui-active');
+       $api.removeCls(mybarAct, 'aui-active');
+       var index = ret.index;
+       if(index==0){
+           $api.addCls($api.byId('sdynamic'), 'aui-active');
+       }else if(index==1){
+           $api.addCls($api.byId('mydynamic'), 'aui-active');
+       }
+        setFrameGroupIndex('framegroup02',ret.index);
+    });
+}
+function myreload(){
+  window.location.reload();
+}
+
+</script>
+
+</html>

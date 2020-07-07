@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="copyright" content="www.apicloud.com" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<title>主播电台</title>
+<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../../css/aui.css">
+<style>
+
+</style>
+</head>
+<body>
+  <header class="aui-bar aui-bar-nav" style="padding-top:25px;background-color:#D33A31" id="secHeader">
+    <a class="aui-pull-left" onclick="goback()" >
+        <span class="aui-iconfont aui-icon-left"></span>
+    </a>
+    <div class="aui-title">动态</div>
+</header>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+var did=null;
+function goback () {
+	api.closeWin({name:'dynamic_top'});
+}
+apiready = function  () {
+	var header = $api.byId('secHeader');
+    $api.fixStatusBar(header);
+    var headerPos = $api.offset(header);
+    did=api.pageParam.did;
+    api.openFrame({
+        name: 'dynamic_body',
+        url: './dynamic_body.html',
+        rect: {
+            x: 0,
+            y: headerPos.h,
+            w: api.winWidth,
+            h: api.winHeight-headerPos.h
+        },
+      pageParam:{
+        did:did
+      }
+
+    });
+
+}
+</script>
+</html>

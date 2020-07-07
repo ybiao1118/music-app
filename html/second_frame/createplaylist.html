@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <style>
+    html,body {min-height: 100%;background-color: #f9f9f9;}
+    .login_input{
+          width: 80%;
+          margin: auto;
+           position: absolute;
+           left: 0;
+           right: 0;
+           /*margin-top: 20%;*/
+    }
+    .login_input .update_pwd{
+      margin-top: 5%;
+      float: left;
+      font-size: 1em;
+      color: #D33A31;
+    }
+    .login_input .find_pwd{
+        margin-top: 5%;
+      float: right;;
+      font-size: 1em;
+      color: #D33A31;
+    }
+    </style>
+</head>
+
+<body>
+  <header class="aui-bar aui-bar-nav" style="padding-top:25px;background-color:#D33A31" id="secHeader">
+    <a class="aui-pull-left" onclick="goback()" >
+        <span class="aui-iconfont aui-icon-left"></span>
+    </a>
+    <div class="aui-title">修改信息</div>
+</header>
+    <!-- <div class="center_div">
+        <div class="exitbtn" tapmode="exitbtnhover">
+            <input id="playlistname" class="login_user" placeholder="歌单标题" type="text"></input>
+        </div>
+        <input name="online" type="radio" value="" class="inp_radio" id="online">设置为隐私歌单</input>
+        <div class="exitbtn" tapmode="exitbtnhover" onclick="create()">创建</div>
+  </div> -->
+  <div class="aui-content aui-margin-b-15">
+    <ul class="aui-list aui-form-list">
+  <li class="aui-list-item">
+          <div class="aui-list-item-inner">
+              <div class="aui-list-item-label">
+                  歌单标题
+              </div>
+              <div class="aui-list-item-input">
+                  <input type="text" placeholder="" id="playlistname" >
+              </div>
+          </div>
+      </li>
+      <li class="aui-list-item">
+          <div class="aui-list-item-inner">
+            <div class="aui-content-padded">
+      <label><input class="aui-radio" type="radio" name="online"  id="online"> 设置为隐私歌单</label>
+
+  </div>
+              <!-- <div class="aui-list-item-input">
+                  <label><input class="aui-radio" type="radio" name="online"  id="online"> 设置为隐私歌单</label>
+
+              </div> -->
+          </div>
+      </li>
+    </ul>
+  </div>
+  <div class="login_input">
+    <p><div class="aui-btn aui-btn-danger aui-btn-block aui-btn-outlined" onclick="create()">创建</div></p>
+  </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js"></script>
+<script type="text/javascript">
+// var URL="http://172.16.6.68:8080/music/server";
+// var URL_IMG="http://172.16.6.68:80";
+var toast = new auiToast();
+var uid=null;
+    apiready = function() {
+       uid=api.pageParam.uid;
+      var header = $api.byId('secHeader');
+         $api.fixStatusBar(header);
+        var headerPos = $api.offset(header);
+    }
+    function create() {
+        var playlistname = $api.val($api.byId('playlistname'));
+        var online = $api.val($api.byId('online'));
+        var temp=1;
+        if(online.checked){
+          temp=0;
+        }
+        if(playlistname!=null){
+            api.ajax({
+                url: getURL_T()+'/playlist/add',
+                method: 'post',
+                dataType: 'json',
+                data: {
+                    values: {
+                        "uid": uid,
+                        "isOnline": temp,
+                        "name":playlistname
+
+                    }
+                }
+            }, function(ret, err) {
+                if (ret) {
+                    var data = ret.data;
+                    if (data) {
+                       toast.success({
+                                 title:"创建成功",
+                                 duration:2000
+                             });
+                   goback();
+
+                    }else {
+                      toast.fail({
+                                title:"创建失败",
+                                duration:2000
+                            });
+
+                    }
+                }
+            });
+          }else{
+            toast.fail({
+                      title:"标题不能为空",
+                      duration:2000
+                  });
+          }
+
+    }
+  function goback(){
+    api.closeWin({
+        name: 'createplaylist'
+    });
+    api.execScript({
+        name: 'root',
+        frameName: 'frame2_main',
+        script: 'myreload();'
+    });
+
+  }
+</script>
+
+</html>

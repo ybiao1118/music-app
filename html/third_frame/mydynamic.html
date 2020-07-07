@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="copyright" content="www.apicloud.com" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<title>主播电台</title>
+<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../../css/aui.css">
+
+<style>
+
+</style>
+</head>
+<body>
+
+<div id="dybody"></div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript">
+var dylist=null;
+var dybody=$api.byId('dybody');
+var user=$api.getStorage('user');
+function openDynamic (did) {
+	api.openWin({
+		name: 'dynamic_top',
+		url: './dynamic_top.html',
+		delay:200,
+	  pageParam: {
+	        did:did
+	    }
+	});
+
+}
+function shuju(){
+	if(user!=null){
+		if(user.id!=null){
+			api.ajax({
+					url: getURL_T()+'/dynamic/selectUid',
+					method: 'get',
+					data: {
+							values: {
+									uid:user.id
+							}
+					}
+			},function(ret, err){
+					if (ret) {
+
+						 if(ret.data!=null){
+							 dylist=ret.data;
+							 html='';
+							 for(var i=0;i<dylist.length;i++){
+								 var div='<div class="aui-card-list special"><div class="aui-card-list-header aui-card-list-user aui-border-b">'
+												 +'<div class="aui-card-list-user-avatar" ><img src="'
+												 +getURL_N()+dylist[i].uimage
+												 +'" class="aui-img-round" style="width:30px;height:30px"/></div>  <div class="aui-card-list-user-name">  <div>'
+												 +dylist[i].uname
+												 +'</div><small >'
+												 +format(dylist[i].time)
+												 +'</small></div><div class="aui-card-list-user-info" >'
+												 +dylist[i].ucity
+												 +'</div>  </div>  <div class="aui-card-list-content-padded" ><div>'
+												 +dylist[i].comment
+												 +'</div> <div  style="width:200px;200px">  <img src="'
+												 +getURL_N()+dylist[i].file
+												 +'" /></div><div class="aui-card-list-footer aui-border-t">'
+												 +'<div><i class="aui-iconfont aui-icon-note"></i>'
+												 +dylist[i].pnumber
+												 +'</div><div class="special1"><i class="aui-iconfont aui-icon-laud"></i>'
+												 +dylist[i].znumber
+												 +'</div><div><i class="aui-iconfont aui-icon-trash special2"></i>'
+												//  +dylist[i].fnumber
+												 +'</div>  </div>  </div>'
+												 html+=div;
+							 }
+							 dybody.innerHTML=html;
+							 var divs=document.getElementsByClassName('special');
+							 for(var i=0;i<divs.length;i++){
+											 divs[i].onclick=(function(arg){
+										 return function(){
+													openDynamic(dylist[arg].id);
+												 };
+								 })(i);
+										 }
+										 var divs=document.getElementsByClassName('special1');
+										 for(var i=0;i<divs.length;i++){
+														 divs[i].onclick=(function(arg,event){
+													 return function(){
+																addZnumber(dylist[arg]);
+																this.innerHTML='<div class="special1" style="color:#D43C33"><i class="aui-iconfont aui-icon-laud"></i>'+(dylist[arg].znumber+1)+'</div>'
+																	return false;
+															 };
+														return false;
+											 })(i);
+													 }
+													 var divs=document.getElementsByClassName('special2');
+													 for(var i=0;i<divs.length;i++){
+																	 divs[i].onclick=(function(arg,event){
+																 return function(){
+																			delDynamic(dylist[arg]);
+																				return false;
+																		 };
+																	return false;
+														 })(i);
+																 }
+								api.refreshHeaderLoadDone();
+						 }
+					}
+			});
+		}
+	}else{
+		
+
+	}
+
+}
+function addZnumber(list){
+	api.ajax({
+	    url: getURL_T()+'/dynamic/update',
+	    method: 'post',
+	    data: {
+	        values: {
+	            id: list.id,
+							znumber:list.znumber+1
+	        }
+	    }
+	});
+}
+function delDynamic(list){
+	api.ajax({
+	    url:  getURL_T()+'/dynamic/delete',
+	    method: 'get',
+	    data: {
+	        values: {
+	            id: list.id
+	        }
+	    }
+	},function(ret, err){
+	    if (ret) {
+					if(ret.data){
+						window.location.reload();
+					}
+	    }
+	});
+
+}
+apiready = function  () {
+	 api.parseTapmode();
+		shuju();
+		api.setRefreshHeaderInfo({
+		    visible: true,
+		    loadingImg: 'widget://image/refresh.png',
+		    bgColor: '#E9967A',
+		    textColor: '#fff',
+		    textDown: '下拉刷新...',
+		    textUp: '松开刷新...',
+		    showTime: true
+		}, function(ret, err){
+			shuju();
+		});
+
+
+}
+
+</script>
+</html>

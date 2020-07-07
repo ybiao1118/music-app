@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="copyright" content="www.apicloud.com" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<title>主播电台</title>
+<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+<link rel="stylesheet" type="text/css" href="../../css/aui.css">
+<style>
+.fr {
+		float: right;
+}
+/* 歌单标题 */
+
+.sectionTitle {
+		height: 2em;
+		line-height: 2em;
+		font-size: 1.12em;
+}
+
+.sectionTitle .titleDivider {
+		display: inline-block;
+		height: 1.12em;
+		width: 3px;
+		vertical-align: top;
+		background-color: #D43C33;
+		margin-top: 0.44em;
+		margin-left: 0.7em;
+		margin-right: 0.3em;
+}
+/* 歌单 */
+
+ .listcoverbar {
+		position: absolute;
+		top: 0;
+		background-color: rgba(0, 0, 0, 0.4);
+		width: 100%;
+		height: 1.2em;
+}
+
+ .listcoverbar span {
+		color: #fff;
+}
+
+ .listcoverbar .earphone {
+		width: 1em;
+		margin-top: 0.2em;
+		margin-right: 0.3em;
+}
+
+ .listcover {
+		width: 100%;
+}
+
+ .listtitle {
+		height: 2.4em;
+		font-size: 1em;
+		line-height: 1.2em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+}
+.center{
+	margin-top: 45%;
+}
+</style>
+</head>
+<body>
+
+<!-- 4 最新音乐 -->
+<div class="sectionTitle">
+		<div class="titleDivider"></div><span>音乐排行榜</span></div>
+		<section class="aui-content">
+				<ul class="aui-list aui-list-in aui-margin-b-15">
+						<li class="aui-list-item" onclick="openNewMusic()">
+								<div class="aui-list-item-label-icon">
+										<img src="../../image/frame0104cover/frame0104cover01.jpg" alt=""style="height:3em;width:3em;">
+								</div>
+								<div class="aui-list-item-inner aui-list-item-arrow">
+										<div class="aui-list-item-title">新歌榜</div>
+								</div>
+						</li>
+						<li class="aui-list-item" onclick="openmusicphb('热歌榜',3)">
+								<div class="aui-list-item-label-icon">
+										<img src="../../image/frame0104cover/frame0104cover02.jpg" alt="" style="height:3em;width:3em;">
+								</div>
+								<div class="aui-list-item-inner aui-list-item-arrow">
+										<div class="aui-list-item-title">热歌榜</div>
+								</div>
+						</li>
+						<li class="aui-list-item" onclick="openmusicphb('下载榜',1)">
+								<div class="aui-list-item-label-icon">
+										<img src="../../image/frame0104cover/frame0104cover03.jpg" alt="" style="height:3em;width:3em;">
+								</div>
+								<div class="aui-list-item-inner aui-list-item-arrow">
+										<div class="aui-list-item-title">下载榜</div>
+								</div>
+						</li>
+						<li class="aui-list-item" onclick="openmusicphb('评论榜',4)">
+								<div class="aui-list-item-label-icon">
+										<img src="../../image/frame0104cover/frame0104cover04.jpg" alt="" style="height:3em;width:3em;">
+								</div>
+								<div class="aui-list-item-inner aui-list-item-arrow">
+										<div class="aui-list-item-title">评论榜</div>
+								</div>
+						</li>
+				</ul>
+		</section>
+
+
+<div class="sectionTitle">
+		<div class="titleDivider"></div><span>歌手排行榜</span></div>
+		<section class="aui-content">
+				<ul class="aui-list aui-list-in aui-margin-b-15">
+						<li class="aui-list-item">
+								<div class="aui-list-item-label-icon">
+										<img src="../../image/frame0104cover/frame0104cover24.png" alt=""style="height:3em;width:3em;">
+								</div>
+								<div class="aui-list-item-inner aui-list-item-arrow">
+										<div class="aui-list-item-title">歌手榜</div>
+								</div>
+						</li>
+				</ul>
+		</section>
+<div class="sectionTitle">
+		<div class="titleDivider"></div><span>歌单排行榜</span></div>
+		<section class="aui-content">
+				<ul class="aui-list aui-list-in aui-margin-b-15">
+						<li class="aui-list-item">
+								<div class="aui-list-item-label-icon">
+										<img src="../../image/frame0104cover/frame0104cover22.jpg" alt=""style="height:3em;width:3em;">
+								</div>
+								<div class="aui-list-item-inner aui-list-item-arrow">
+										<div class="aui-list-item-title">歌单热门榜</div>
+								</div>
+						</li>
+						<li class="aui-list-item">
+								<div class="aui-list-item-label-icon">
+										<img src="../../image/frame0104cover/frame0104cover23.jpg" alt=""style="height:3em;width:3em;">
+								</div>
+								<div class="aui-list-item-inner aui-list-item-arrow">
+										<div class="aui-list-item-title">歌单评论榜</div>
+								</div>
+						</li>
+				</ul>
+		</section>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript">
+function openMusicList () {
+	api.openWin({
+		name: 'musiclist',
+		url: '../musiclist.html',
+		delay:200
+	});
+}
+function openNewMusic(){
+	api.ajax({
+			url: getURL_T()+'/music',
+			method: 'get',
+	},function(ret, err){
+		if(ret){
+			api.openWin({
+					name: 'phb_top',
+					url: './phb_top.html',
+					pageParam:{
+						name:"新歌榜",
+						musiclist:ret.data
+					}
+			});
+		}
+	});
+
+}
+function openmusicphb(wname,num){
+				api.openWin({
+						name: 'phb_top',
+						url: './phb_top.html',
+						pageParam:{
+							name:wname,
+							number:num
+						}
+				});
+
+
+}
+apiready = function  () {}
+</script>
+</html>

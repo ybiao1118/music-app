@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../../css/common.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+<style>
+html,body {min-height: 100%;background-color: #f9f9f9;}
+.login_input{
+      width: 80%;
+      margin: auto;
+       position: absolute;
+       left: 0;
+       right: 0;
+       margin-top: 60%;
+}
+.login_input p{
+  margin-bottom: 5%;
+}
+.login_img{
+  width: 30%;
+  margin: auto;
+   position: absolute;
+   left: 0;
+   right: 0;
+   margin-top: 30%;
+}
+footer{
+  position:absolute;
+  bottom:0;
+  width:100%;
+}
+.other-login{
+  text-align: center;
+  font-size: 1em;
+  color: #D33A31;
+}
+</style>
+</head>
+
+<body >
+
+  <header class="aui-bar aui-bar-nav" style="padding-top:25px;background-color:#D33A31" id="secHeader">
+    <a class="aui-pull-left" onclick="goback()" >
+        <span class="aui-iconfont aui-icon-left"></span>
+    </a>
+    <div class="aui-title">登录注册</div>
+</header>
+    <img src="../../icon/icon150x150.png" class="login_img"></img>
+    <div class="login_input">
+      <p><div class="aui-btn aui-btn-danger aui-btn-block aui-btn-outlined" onclick="openNewWin('login')">登录</div></p>
+      <p><div class="aui-btn aui-btn-danger aui-btn-block aui-btn-outlined"onclick="openNewWin('reg')">注册</div></p>
+    </div>
+
+    <footer>
+      <p class="other-login">其他登录方式</P>
+      <p class="aui-hr"></p>
+    <section class="aui-grid">
+    <div class="aui-row">
+        <div class="aui-col-xs-3">
+            <i class="aui-iconfont aui-icon-qq"></i>
+            <div class="aui-grid-label">QQ</div>
+        </div>
+        <div class="aui-col-xs-3">
+            <i class="aui-iconfont aui-icon-wechat"></i>
+            <div class="aui-grid-label">微信</div>
+        </div>
+        <div class="aui-col-xs-3">
+            <i class="aui-iconfont aui-icon-wechat-circle"></i>
+            <div class="aui-grid-label">朋友圈</div>
+        </div>
+        <div class="aui-col-xs-3">
+            <i class="aui-iconfont aui-icon-weibo"></i>
+            <div class="aui-grid-label">微博</div>
+        </div>
+
+    </div>
+</section>
+</footer>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+    function openNewWin(winname) {
+        api.openWin({
+            name: winname,
+            url: './' + winname + '.html',
+            delay: 200,
+            pageParam:{
+              logintag:true
+            }
+        });
+
+    }
+
+    apiready = function() {
+      var header = $api.byId('secHeader');
+         $api.fixStatusBar(header);
+        var headerPos = $api.offset(header);
+    }
+    function goback () {
+    	api.closeWin({name:'login_main'});
+      api.execScript({
+    name: 'root',
+    frameName: 'frame4_main',
+    script: 'myreload()'
+});
+    }
+</script>
+
+</html>

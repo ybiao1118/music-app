@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="copyright" content="www.apicloud.com" />
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>首页推荐</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <style>
+
+
+        .fr {
+            float: right;
+        }
+        /* 歌单标题 */
+
+        .sectionTitle {
+            height: 2em;
+            line-height: 2em;
+            font-size: 1.12em;
+        }
+
+        .sectionTitle .titleDivider {
+            display: inline-block;
+            height: 1.12em;
+            width: 3px;
+            vertical-align: top;
+            background-color: #D43C33;
+            margin-top: 0.44em;
+            margin-left: 0.7em;
+            margin-right: 0.3em;
+        }
+        /* 歌单 */
+
+         .listcoverbar {
+            position: absolute;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            width: 100%;
+            height: 1.2em;
+        }
+
+         .listcoverbar span {
+            color: #fff;
+        }
+
+         .listcoverbar .earphone {
+            width: 1em;
+            margin-top: 0.2em;
+            margin-right: 0.3em;
+        }
+
+         .listcover {
+            width: 100%;
+        }
+
+         .listtitle {
+            height: 2.4em;
+            font-size: 1em;
+            line-height: 1.2em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+				.center{
+					margin-top: 45%;
+				}
+    </style>
+</head>
+<body>
+					<section class="aui-content">
+							<ul class="aui-list aui-list-in aui-margin-b-15">
+									<li class="aui-list-item" onclick="openwin()">
+											<!-- <div class="aui-list-item-label-icon">
+													<img src="../../image/frame0101cover/frame0101cover14.jpg" alt=""style="height:3em;width:3em;">
+											</div> -->
+											<div class="aui-list-item-inner aui-list-item-arrow">
+													<div class="aui-list-item-title">按歌手搜索</div>
+											</div>
+									</li>
+							</ul>
+					</section>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+function openwin(){
+  api.openWin({
+      name: 'fenlei_player_top',
+      url: './fenlei_player_top.html'
+  });
+
+}
+
+</script>
+
+</html>
